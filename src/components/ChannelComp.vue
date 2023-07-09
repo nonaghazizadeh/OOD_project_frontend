@@ -84,14 +84,17 @@
                                         <span class="card-title" >
                                             خبر مدارس
                                         </span>
-                                        <span class="trash-icon">
+                                        <span class="edit-icon" v-show="!isUser">
+                                            <font-awesome-icon icon="fa-solid fa-pen-to-square"/>
+                                        </span>
+                                        <span class="trash-icon" v-show="!isUser">
                                             <font-awesome-icon icon="fa-solid fa-trash"/>
                                         </span>
                                     </div>
                                     <p v-if="isUser" class="card-text">
                                         تعطیلی مدارس به علت برودت هوا
                                         <span v-show="isUser" class="card-link-span">
-                                            <a class="card-link" href="" @click.prevent="openModal">ادامه مطلب ...</a>
+                                            <a class="card-link" href="" @click.prevent="openModal" :class="{'fa-disabled': isNotJoin}">ادامه مطلب ...</a>
                                         </span>
                                     </p> 
                                     <p v-else class="card-text">
@@ -102,8 +105,16 @@
                                         <a class="card-link">۲۳\۳\۱۴۰۱</a>
                                     </span>
                                     <div>
-                                        <font-awesome-icon icon="fa-solid fa-thumbs-down" class="mx-3 dislike-icon"/>
-                                        <font-awesome-icon icon="fa-solid fa-thumbs-up"  class="like-icon"/>
+                                        <font-awesome-icon 
+                                        icon="fa-solid fa-thumbs-down" 
+                                        class="mx-3 dislike-icon"
+                                        :class="{'fa-disabled': isNotJoin}"
+                                        />
+                                        <font-awesome-icon 
+                                        icon="fa-solid fa-thumbs-up"  
+                                        class="like-icon"
+                                        :class="{'fa-disabled': isNotJoin}"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -113,14 +124,17 @@
                                         <span class="card-title" >
                                             خبر جاده
                                         </span>
-                                        <span class="trash-icon">
+                                        <span class="edit icon" v-show="!isUser">
+                                            <font-awesome-icon icon="fa-solid fa-pen-to-square"/>
+                                        </span>
+                                        <span class="trash-icon" v-show="!isUser">
                                             <font-awesome-icon icon="fa-solid fa-trash"/>
                                         </span>
                                     </div>
                                     <p v-if="isUser" class="card-text">
                                         بازگشایی محور کرج - چالوس
                                         <span v-show="isUser" class="card-link-span">
-                                            <a class="card-link">ادامه مطلب ...</a>
+                                            <a class="card-link" :class="{'fa-disabled': isNotJoin}">ادامه مطلب ...</a>
                                         </span>
                                     </p>
                                     <p v-else class="card-text">
@@ -130,11 +144,9 @@
                                         <a class="card-link">۲۵\۳\۱۴۰۱</a>
                                     </span>
                                     <div>
-                                        <font-awesome-icon icon="fa-solid fa-thumbs-down" class="mx-3 dislike-icon"/>
-                                        <font-awesome-icon icon="fa-solid fa-thumbs-up"  class="like-icon"/>
+                                        <font-awesome-icon :class="{'fa-disabled': isNotJoin}" icon="fa-solid fa-thumbs-down" class="mx-3 dislike-icon"/>
+                                        <font-awesome-icon :class="{'fa-disabled': isNotJoin}" icon="fa-solid fa-thumbs-up"  class="like-icon"/>
                                     </div>
-
-
 
                                 </div>
                             </div>
@@ -146,7 +158,10 @@
         </div>
         <b-modal dir="rtl" v-model="modalShow" hide-header-close no-close-on-esc no-close-on-backdrop>
             <template #default>
-                <p>برای مشاهده کامل خبر باید حق عضویت خریداری کنید. آیا می‌خواهید حق عضویت این کانال را خریداری کنید؟</p>
+                <p class="modal-text">
+                     برای مشاهده کامل محتوا می‌توانید هزینه آن را پرداخت کنید و یا با رفتن به بخش اطلاعات کانال حق‌عضویت خریداری کنید. آیا می‌خواهید این محتوا را بخرید؟ 
+                     (هزینه محتوا ۱۰۰۰ تومان است)
+                </p>
             </template>
 
             <template #modal-footer="{ ok, cancel}">
@@ -163,9 +178,15 @@
 
 <script>
 export default {
+    watch:{
+        isJoin(){
+            this.isNotJoin = !this.isJoin
+        }
+    },
     data(){
         return {
             isJoin: true,
+            isNotJoin: false,
             isUser: true,
             modalShow: false,
             addChannelShow: false
@@ -184,6 +205,14 @@ export default {
 </script>
 
 <style scoped>
+
+.fa-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.modal-text{
+    text-align: right !important;
+}
 .exit-icon-container{
     bottom:0;
 }
@@ -297,6 +326,6 @@ export default {
     font-weight: bold;
 }
 .trash-icon{
-    margin-right: 84%;
+    margin-right: 660px;
 }
 </style>

@@ -1,27 +1,37 @@
 <template>
-    <div class="signup-page">
+    <div dir="rtl" class="signup-page">
       <section class="signup">
       <div class="container">
           <div class="signup-content">
               <div class="signup-form">
-                  <h2 class="form-title">Sign in</h2>
+                  <h2 class="form-title">ورود</h2>
                   <form class="register-form" id="register-form">
-                      <div class="form-group">
-                          <label for="name"><font-awesome-icon icon="fa-solid fa-user-tie"/></label>
-                          <input type="text" name="name" id="name" placeholder="Full Name"/>
-                      </div>
-                      <div class="form-group">
-                          <label for="pass"><font-awesome-icon icon="fa-solid fa-lock"/></label>
-                          <input type="password" name="pass" id="pass" placeholder="Password"/>
-                      </div>
-                      <div class="form-group form-button">
-                          <input type="submit" name="signup" id="signup" class="form-submit" value="Login"/>
+                    <b-input-group class="mt-3">
+                      <template #prepend>
+                        <b-input-group-text>
+                          <font-awesome-icon icon="fa-solid fa-user-tie"/>
+                        </b-input-group-text>
+                      </template>
+                      <b-form-input placeholder="ایمیل/تلفن همراه"></b-form-input>
+                    </b-input-group>
+                    <b-input-group class="mt-3">
+                      <template #prepend>
+                        <b-input-group-text>
+                          <font-awesome-icon icon="fa-solid fa-lock"/>
+                        </b-input-group-text>
+                      </template>
+                      <b-form-input placeholder="رمز عبور"></b-form-input>
+                    </b-input-group>
+                      <div class="form-group form-button mt-5">
+                        <b-button variant="secondary">
+                          ورود     
+                        </b-button>
                       </div>
                   </form>
               </div>
               <div class="signup-image">
                   <figure><img src="../../images/signup-image.jpg" alt="sign up image"></figure>
-                  <router-link class="signup-image-link" to="/signup">Create an account</router-link>
+                  <router-link class="signup-image-link" to="/signup">ساخت حساب کاربری</router-link>
               </div>
           </div>
       </div>
@@ -44,58 +54,13 @@
     display: flex;
     display: -webkit-flex; 
   }
-  
-  a:focus, a:active {
-    text-decoration: none;
-    outline: none;
-    transition: all 300ms ease 0s;
-    -moz-transition: all 300ms ease 0s;
-    -webkit-transition: all 300ms ease 0s;
-    -o-transition: all 300ms ease 0s;
-    -ms-transition: all 300ms ease 0s; 
+
+  a{
+    color: black !important;
   }
-  
-  input, select, textarea {
-    outline: none;
-    appearance: unset !important;
-    -moz-appearance: unset !important;
-    -webkit-appearance: unset !important;
-    -o-appearance: unset !important;
-    -ms-appearance: unset !important; 
-  }
-  
-  input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
-    appearance: none !important;
-    -moz-appearance: none !important;
-    -webkit-appearance: none !important;
-    -o-appearance: none !important;
-    -ms-appearance: none !important;
-    margin: 0; 
-  }
-  
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    box-shadow: none !important;
-    -moz-box-shadow: none !important;
-    -webkit-box-shadow: none !important;
-    -o-box-shadow: none !important;
-    -ms-box-shadow: none !important; 
-  }
-  
-  input[type=checkbox] {
-    appearance: checkbox !important;
-    -moz-appearance: checkbox !important;
-    -webkit-appearance: checkbox !important;
-    -o-appearance: checkbox !important;
-    -ms-appearance: checkbox !important; 
-  }
-  
-  input[type=radio] {
-    appearance: radio !important;
-    -moz-appearance: radio !important;
-    -webkit-appearance: radio !important;
-    -o-appearance: radio !important;
-    -ms-appearance: radio !important; 
+  a:hover{
+    color: black !important;
+    text-decoration: none !important;
   }
   
   img {
@@ -128,7 +93,8 @@
     color: #222;
     background: #f8f8f8;
     font-weight: 400;
-    font-family: Poppins; }
+    font-family: Poppins; 
+  }
   
   .container {
     width: 900px;
@@ -144,7 +110,20 @@
     -webkit-border-radius: 20px;
     -o-border-radius: 20px;
     -ms-border-radius: 20px; }
-  
+
+  .input-group-text{
+    border-top-left-radius: 0px !important;
+    border-top-right-radius: 5px !important;
+    border-bottom-right-radius: 5px !important;
+    border-bottom-left-radius: 0px !important;
+    }
+    .form-control {
+      border-top-left-radius: 5px !important;
+      border-top-right-radius: 0px !important;
+      border-bottom-right-radius: 0px !important;
+      border-bottom-left-radius: 5px !important;
+      
+    }
   .signup {
     margin-bottom: 150px; }
   
@@ -163,23 +142,6 @@
   figure {
     margin-bottom: 50px;
     text-align: center; }
-  
-  .form-submit {
-    display: inline-block;
-    background: #6dabe4;
-    color: #fff;
-    border-bottom: none;
-    width: auto;
-    padding: 15px 39px;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -o-border-radius: 5px;
-    -ms-border-radius: 5px;
-    margin-top: 25px;
-    cursor: pointer; }
-    .form-submit:hover {
-      background: #4292dc; }
   
   #signin {
     margin-top: 16px; }
@@ -202,97 +164,12 @@
   .form-group {
     position: relative;
     margin-bottom: 25px;
-    overflow: hidden; }
-    .form-group:last-child {
-      margin-bottom: 0px; }
-  
-  input {
-    width: 100%;
-    display: block;
-    border: none;
-    border-bottom: 1px solid #999;
-    padding: 6px 30px;
-    font-family: Poppins;
-    box-sizing: border-box; }
-    input::-webkit-input-placeholder {
-      color: #999; }
-    input::-moz-placeholder {
-      color: #999; }
-    input:-ms-input-placeholder {
-      color: #999; }
-    input:-moz-placeholder {
-      color: #999; }
-    input:focus {
-      border-bottom: 1px solid #222; }
-      input:focus::-webkit-input-placeholder {
-        color: #222; }
-      input:focus::-moz-placeholder {
-        color: #222; }
-      input:focus:-ms-input-placeholder {
-        color: #222; }
-      input:focus:-moz-placeholder {
-        color: #222; }
-  
-  input[type=checkbox]:not(old) {
-    width: 2em;
-    margin: 0;
-    padding: 0;
-    font-size: 1em;
-    display: none; }
-  
-  input[type=checkbox]:not(old) + label {
-    display: inline-block;
-    line-height: 1.5em;
-    margin-top: 6px; }
-  
-  input[type=checkbox]:not(old) + label > span {
-    display: inline-block;
-    width: 13px;
-    height: 13px;
-    margin-right: 15px;
-    margin-bottom: 3px;
-    border: 1px solid #999;
-    border-radius: 2px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    -o-border-radius: 2px;
-    -ms-border-radius: 2px;
-    background: white;
-    background-image: -moz-linear-gradient(white, white);
-    background-image: -ms-linear-gradient(white, white);
-    background-image: -o-linear-gradient(white, white);
-    background-image: -webkit-linear-gradient(white, white);
-    background-image: linear-gradient(white, white);
-    vertical-align: bottom; }
-  
-  input[type=checkbox]:not(old):checked + label > span {
-    background-image: -moz-linear-gradient(white, white);
-    background-image: -ms-linear-gradient(white, white);
-    background-image: -o-linear-gradient(white, white);
-    background-image: -webkit-linear-gradient(white, white);
-    background-image: linear-gradient(white, white); }
-  
-  input[type=checkbox]:not(old):checked + label > span:before {
-    content: '\f26b';
-    display: block;
-    color: #222;
-    font-size: 11px;
-    line-height: 1.2;
-    text-align: center;
-    font-family: 'Material-Design-Iconic-Font';
-    font-weight: bold; }
-  
-  label {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    color: #222; }
-  
+    overflow: hidden; 
+  }
+.form-group:last-child {
+  margin-bottom: 0px; 
+}
+
   
   </style>
   

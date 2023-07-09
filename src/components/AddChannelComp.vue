@@ -78,18 +78,26 @@
                     </div>
                     <div class="row py-3 px-5">
                         <div class="col-5">
-                            <b-form-input type="number" placeholder="هزینه اشتراک یک‌ ماه"></b-form-input>
+                            <b-form-input 
+                            :disabled="yesStatus"
+                            type="number" placeholder="هزینه اشتراک یک‌ ماه"></b-form-input>
                         </div>
                         <div class="col-5">
-                            <b-form-input type="number" placeholder="هزینه اشتراک سه‌ ماه"></b-form-input>
+                            <b-form-input 
+                            :disabled="yesStatus"
+                            type="number" placeholder="هزینه اشتراک سه‌ ماه"></b-form-input>
                         </div>
                     </div>
                     <div class="row py-3 px-5">
                         <div class="col-5">
-                            <b-form-input type="number" placeholder="هزینه اشتراک شش ماه"></b-form-input>
+                            <b-form-input 
+                            :disabled="yesStatus"
+                            type="number" placeholder="هزینه اشتراک شش ماه"></b-form-input>
                         </div>
                         <div class="col-5">
-                            <b-form-input type="number" placeholder="هزینه اشتراک دوازده ماه"></b-form-input>
+                            <b-form-input 
+                            :disabled="yesStatus"
+                            type="number" placeholder="هزینه اشتراک دوازده ماه"></b-form-input>
                         </div>
                     </div>
                 </div>
@@ -100,6 +108,25 @@
 
 <script>
 export default {
+    watch: {
+        yesStatus: function (val) {
+            if (val) {
+                this.noStatus = false;
+            }
+        },
+        noStatus: function (val) {
+            if (val) {
+                this.yesStatus = false;
+            }
+        }
+    },
+    data() {
+        return {
+            yesStatus: true,
+            noStatus: false,
+            file1: null
+        }
+    }
 
 }
 </script>

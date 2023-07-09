@@ -81,30 +81,65 @@
                             </div>
                             <div class="row master-center-2-content">
                                 <div class="col-3">
-                                    <b-form-select v-model="selected" :options="options"></b-form-select>
+                                    <b-form-select 
+                                    v-model="feeSelected"
+                                    :disabled="!isAdmin" 
+                                    :options="options"></b-form-select>
                                 </div>
                                 <div class="col-2">
-                                    <b-form-input type="number" placeholder="هزینه اشتراک"></b-form-input>
+                                    <b-form-input 
+                                    type="number" 
+                                    placeholder="هزینه اشتراک"
+                                    :disabled="!isAdmin"
+                                    ></b-form-input>
                                 </div>
                                 <div class="col-1">
-                                    <b-button pill>تغییر</b-button>
+                                    <b-button pill :disabled="!isAdmin">تغییر</b-button>
                                 </div>
                                 <div class="col-5">
-                                    <b-form-select v-model="selected" :options="userOptions"></b-form-select>
+                                    <b-form-select v-model="userSelected" :options="userOptions"></b-form-select>
                                 </div>
                                 <div class="col-1">
                                     <b-button pill>حذف</b-button>
                                 </div>
                             </div>
                             <div class="row master-center-3-content">
+                                <div class="col-4 px-5 py-3">
+                                محتوا‌های کانال به صورت رایگان در اختیار مخاطبین قرار بگیرد؟
+                                </div>
+                                <div class="col-1 py-3">
+                                    <b-form-checkbox
+                                    id="checkbox-1"
+                                    v-model="yesStatus"
+                                    class="mx-3"
+                                    :disabled="!isAdmin"
+                                    >
+                                        بله
+                                    </b-form-checkbox>
+                                </div>
+                                <div class="col-1 py-3">
+                                    <b-form-checkbox
+                                    id="checkbox-2"
+                                    v-model="noStatus"
+                                    class="mx-3"
+                                    :disabled="!isAdmin"
+                                >
+                                        خیر
+                                    </b-form-checkbox>
+                                </div>
                                 <div class="col-3">
-                                    <b-form-select v-model="selected" :options="userOptions"></b-form-select>
+                                    <b-form-select 
+                                    v-model="userSelected" 
+                                    :disabled="!isAdmin"
+                                    :options="userOptions"></b-form-select>
                                 </div>
                                 <div class="col-2">
-                                    <b-form-input type="number" placeholder="درصد سود"></b-form-input>
+                                    <b-form-input 
+                                    :disabled="!isAdmin"
+                                    type="number" placeholder="درصد سود"></b-form-input>
                                 </div>
                                 <div class="col-1">
-                                    <b-button pill>افزودن</b-button>
+                                    <b-button pill :disabled="!isAdmin">افزودن</b-button>
                                 </div>
                             </div>
                             <div class="row master-center-4-content">
@@ -121,10 +156,31 @@
                             </div>
                             <div class="row master-bottom-content">
                                 <div class="col-5">
-                                    <b-form-select v-model="selected" :options="categoryOptions"></b-form-select>
+                                    <b-form-select 
+                                    v-model="categorySelected" 
+                                    :options="categoryOptions"
+                                    :disabled="!isAdmin"
+                                    ></b-form-select>
                                 </div>
                                 <div class="col-1">
-                                    <b-button pill>حذف</b-button>
+                                    <b-button pill :disabled="!isAdmin">حذف</b-button>
+                                </div>
+                                <div class="col">
+                                    <b-form-select 
+                                    v-model="categorySelected" 
+                                    :options="categoryOptions"
+                                    :disabled="!isAdmin"
+                                    ></b-form-select>
+                                </div>
+                                <div class="col">
+                                    <b-form-input 
+                                    type="text" 
+                                    placeholder="نام تغییر یافته دسته‌بندی"
+                                    :disabled="!isAdmin"
+                                    ></b-form-input>
+                                </div>
+                                <div class="col-1">
+                                    <b-button pill :disabled="!isAdmin">تغییر</b-button>
                                 </div>
                             </div>
                         </div>
@@ -163,7 +219,7 @@
                     <div class="row bottom-content mt-5">
 
                         <div class="col-5">
-                            <b-form-select v-model="selected" :options="options"></b-form-select>
+                            <b-form-select v-model="feeSelected" :options="options"></b-form-select>
                         </div>
                         <div class="col-1"><b-button pill>خرید</b-button></div>
                         <div class="col"></div>
@@ -178,8 +234,12 @@
 export default {
     data(){
         return {
-            isUser: true,
+            isUser: false,
             addChannelShow: false,
+            feeSelected: null,
+            userSelected: null,
+            categorySelected: null,
+            isAdmin:false,
             fields: [
             { key: 'time', label: 'مدت زمان' },
             { key: 'price', label: 'قیمت' },
@@ -212,12 +272,19 @@ export default {
             { name: 'اقتصاد', count: '۱۳'},
             ] ,
             options: [
+            { value: null, text: 'انتخاب نوع حق عضویت' },
             { value: 1, text: 'یک ماه' },
             { value: 3, text: 'سه ماه' },
             { value: 6, text: 'شش ماه' },
             { value: 12, text: 'دوازده ماه' },
             ],
+            percentageOptions:[
+            { value: 1, text: '۱۰' },
+            { value: 2, text: '۵' },
+            { value: 3, text: '۲۰' },
+            ],
             userOptions: [
+            { value: null, text: 'نام کاربر' },
             { value: 1, text: 'نونا' },
             { value: 2, text: 'علی' },
             { value: 3, text: 'علیرضا' },
@@ -225,6 +292,7 @@ export default {
             { value: 5, text: 'فاطمه' },
             ],
             categoryOptions: [
+            { value: null, text: 'نام دسته‌بندی' },
             { value: 1, text: 'خبر' },
             { value: 2, text: 'ورزش' },
             { value: 3, text: 'اقتصاد' },
@@ -233,12 +301,6 @@ export default {
 
     },
     methods: {
-        openModal() {
-            this.modalShow = true
-        },
-        cancel() {
-            this.modalShow = false
-        }
     }
 
 }

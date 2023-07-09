@@ -86,14 +86,7 @@ export default {
             ]
         }
     },
-    methods: {
-        openModal() {
-            this.modalShow = true
-        },
-        cancel() {
-            this.modalShow = false
-        }
-    }
+    methods: {}
 
 }
 </script>

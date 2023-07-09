@@ -81,6 +81,7 @@
                                 <div class="col-1 py-3">
                                     <b-form-checkbox
                                     id="checkbox-1"
+                                    button-variant="secondary"
                                     v-model="yesStatus"
                                     class="mx-3"
                                     >
@@ -97,7 +98,8 @@
                                     </b-form-checkbox>
                                 </div>
                                 <div class="col-6">
-                                    <b-form-input type="number" placeholder="هزینه محتوا"></b-form-input>
+                                    <b-form-input type="number" placeholder="هزینه محتوا" :disabled="yesStatus">
+                                    </b-form-input>
                                 </div>
                             </div>
                             <div class="row center-2-add-content px-5 py-2">
@@ -106,8 +108,8 @@
                                 </div>
                                 <div class="col-1 py-3">
                                     <b-form-checkbox
-                                    id="checkbox-1"
-                                    v-model="yesStatus"
+                                    id="checkbox-3"
+                                    v-model="isText"
                                     class="mx-3"
                                     >
                                         متن
@@ -115,9 +117,9 @@
                                 </div>
                                 <div class="col-3 py-3">
                                     <b-form-checkbox
-                                        id="checkbox-2"
-                                        v-model="noStatus"
-                                        class="mx-3"
+                                        id="checkbox-4"
+                                        v-model="isMedia"
+                                        class="mx-3 success"
                                     >
                                         ویدیو، عکس، فایل صوتی
                                     </b-form-checkbox>
@@ -126,7 +128,7 @@
                                     <b-form-file
                                         class=""
                                         v-model="file1"
-                                        :disabled="editMode"
+                                        :disabled="editMode || !isMedia"
                                         placeholder=" انتخاب محتوا " 
                                     ></b-form-file>
                                 </div>
@@ -137,6 +139,7 @@
                                         id="textarea-rows"
                                         placeholder="متن خود را وارد کنید"
                                         rows="5"
+                                        :disabled="!isText"
                                     ></b-form-textarea>  
                                 </div>
                             </div>
@@ -163,27 +166,49 @@
 
 <script>
 export default {
+    watch: {
+        yesStatus: function (val) {
+            if (val) {
+                this.noStatus = false
+            }
+        },
+        noStatus: function (val) {
+            if (val) {
+                this.yesStatus = false
+            }
+        },
+        isText: function (val) {
+            if (val) {
+                this.isMedia = false
+            }
+        },
+        isMedia: function (val) {
+            if (val) {
+                this.isText = false
+            }
+        }
+    },
     data(){
         return {
+            yesStatus: false,
+            noStatus: false,
+            isText: false,
+            isMedia: false,
             editMode: true,
             isJoin: true,
             isUser: false,
             modalShow: false,
             addChannelShow: false,
+            selected: null,
             categoryOptions: [
-            { value: 1, text: 'خبر' },
+            { value: null, text: 'انتخاب دسته‌بندی' },
+            { value: 'a', text: 'خبر' },
             { value: 2, text: 'ورزش' },
             { value: 3, text: 'اقتصاد' },
             ]
         }
     },
     methods: {
-        openModal() {
-            this.modalShow = true
-        },
-        cancel() {
-            this.modalShow = false
-        }
     }
 
 }
@@ -284,4 +309,5 @@ export default {
 .like-icon{
     padding-bottom:0.09rem;
 }
+
 </style>
