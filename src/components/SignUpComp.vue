@@ -32,7 +32,9 @@
                     </b-input-group>
                     <div class="form-group form-button mt-5">
                       <b-button variant="secondary">
-                        ثبت‌نام     
+                        <router-link class="login-button" to="/channel">
+                          ثبت‌نام     
+                        </router-link>
                         </b-button>
                     </div>
                 </form>
@@ -53,6 +55,9 @@ export default {
 </script>
 
 <style scoped>
+.login-button, .login-button:hover{
+    color: white !important;
+  }
 .signup-page {
   padding-top: 80px;
 }

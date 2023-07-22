@@ -61,7 +61,7 @@
                         <div class="col">
                         </div>
                         <div class="col-1">
-                            <font-awesome-icon icon="fa-solid fa-close" class="channel-info-icon"/>
+                            <font-awesome-icon icon="fa-solid fa-close" class="channel-info-icon" @click="close()"/>
                         </div>
                     </div>
                     <div class="row center-add-content">
@@ -148,10 +148,10 @@
 
                                 </div>
                                 <div class="col-2">
-                                    <b-button v-show="!editMode" variant="secondary">
+                                    <b-button v-show="!editMode" variant="secondary" @click="addContent()">
                                         افزودن     
                                     </b-button>
-                                    <b-button v-show="editMode" variant="secondary">
+                                    <b-button v-show="editMode" variant="secondary" @click="editContent()">
                                         تغییر     
                                     </b-button>
                                 </div>
@@ -166,6 +166,10 @@
 
 <script>
 export default {
+    created(){
+
+        console.log(this.$router.query.edit)
+    },
     watch: {
         yesStatus: function (val) {
             if (val) {
@@ -190,11 +194,11 @@ export default {
     },
     data(){
         return {
-            yesStatus: false,
+            yesStatus: true,
             noStatus: false,
             isText: false,
             isMedia: false,
-            editMode: true,
+            editMode: (this.$route.query.edit === "true"),
             isJoin: true,
             isUser: false,
             modalShow: false,
@@ -208,7 +212,17 @@ export default {
             ]
         }
     },
+
     methods: {
+        addContent(){
+            this.$router.push('/channel')
+        },
+        editContent(){
+            this.$router.push('/channel')
+        },
+        close(){
+            this.$router.push('/channel')
+        }
     }
 
 }

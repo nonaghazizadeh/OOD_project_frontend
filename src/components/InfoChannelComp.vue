@@ -3,52 +3,12 @@
         <div dir="rtl" class="channel-page container-fluid">
             <div class="row">
                 <div class="col-1 info">
-                    <img src = "../assets/images/avatar.png" class = "rounded-circle avatar" width = "40" height = "40">
+                    <img src = "../assets/images/avatar.png" class = "rounded-circle avatar" width = "40" height = "40" @click="goProfile()">
                     <div class="position-absolute exit-icon-container" >
-                        <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="exit-icon" />
+                        <router-link to="/">
+                            <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="exit-icon" />
+                        </router-link>
                     </div> 
-                </div>
-                <div class="col-2 sidebar no-float">
-                    <div class="mt-4 sidebar-top">
-                        <span>
-                            لیست‌کانال‌ها
-                        </span>
-                        <span>
-                            <font-awesome-icon icon="fa-solid fa-plus" class="add-icon"/>
-                        </span>
-                    </div>
-                    <div class="input-group mb-3  mt-3">
-                        <b-input-group class="mt-3">
-                        <template #append>
-                        <b-input-group-text>
-                            <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
-                        </b-input-group-text>
-                        </template>
-                        <b-form-input></b-form-input>
-                        </b-input-group>
-                    </div>
-                    <div class="list-group mt-3 w-100 channel-list">
-                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
-                            <div class="d-flex w-100 justify-content-between">
-                                <img src = "../assets/images/ISNA.jpeg" class = "rounded-circle" width = "25" height = "25">
-                                <h5 class="mb-1 ">کانال ایسنا</h5>
-                                <small>سه روز پیش</small>
-                            </div>
-                            <small>
-                                بازگشایی مدارس در تهران ...
-                            </small>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <div class="d-flex w-100 justify-content-between">
-                                <img src = "../assets/images/currency.png" class = "rounded-circle" width = "25" height = "25">
-                                <h5 class="mb-1">کانال ارز</h5>
-                                <small>چهار روز پیش</small>
-                            </div>
-                            <small>
-                                قیمت دلار امروز ۲۰۰۰۰ تومان ...
-                            </small>
-                        </a>
-                    </div>
                 </div>
                 <div v-show="!isUser" class="col content no-float">
                     <div class="row top-content">
@@ -61,129 +21,207 @@
                         <div class="col">
                         </div>
                         <div class="col-1">
-                            <font-awesome-icon icon="fa-solid fa-trash" class="channel-info-icon" />
+                            <font-awesome-icon icon="fa-solid fa-trash" class="channel-info-icon" @click="removeChannel()"/>
                         </div>
                         <div class="col-1">
-                            <font-awesome-icon icon="fa-solid fa-close" class="channel-info-icon" />
+                            <router-link to="/channel" class="close-icon">
+                                <font-awesome-icon icon="fa-solid fa-close" class="channel-info-icon close-icon" />
+                            </router-link>
                         </div>
                     </div>
-                    <div class="row master-center-content mt-5">
-                        <div class="col-12">
-                            <div class="row master-center-content">
-                                <div class="col-6">
-                                    <b-table :fields="fields" :items="items" sticky-header="200px">
+                    <div class="tabs my-5 py-5 ">
+                        <b-tabs content-class="mt-5">
+                            <b-tab title="حق اشتراک" active>
+                                <div class="row">
+                                    <div class="col"></div>
+                                    <div class="col-4 px-5 py-3">
+                                    محتوا‌های کانال به صورت رایگان در اختیار مخاطبین قرار بگیرد؟
+                                    </div>
+                                    <div class="col-1 py-3">
+                                        <b-form-checkbox
+                                        id="checkbox-1"
+                                        v-model="yesStatus"
+                                        class="mx-3"
+                                        :disabled="!isAdmin"
+                                        >
+                                            بله
+                                        </b-form-checkbox>
+                                    </div>
+                                    <div class="col-1 py-3">
+                                        <b-form-checkbox
+                                        id="checkbox-2"
+                                        v-model="noStatus"
+                                        class="mx-3"
+                                        :disabled="!isAdmin">
+                                            خیر
+                                        </b-form-checkbox>
+                                    </div>
+                                    <div class="col"></div>
+                                </div>
+                                <div class="row master-center-content">
+                                    <div class="col-1"></div>
+                                    <div class="col">
+                                        <b-table :fields="fields" :items="items" sticky-header="200px">
+                                        </b-table>
+                                    </div>
+                                    <div class="col-1"></div>
+                                </div>
+
+                                <div class="row master-center-2-content">
+                                    <div class="col"></div>
+                                    <div class="col-3">
+                                        <b-form-select 
+                                        v-model="feeSelected"
+                                        :disabled="yesStatus"
+                                        :options="options">
+                                        </b-form-select>
+                                    </div>
+                                    <div class="col-2">
+                                        <b-form-input 
+                                            type="number" 
+                                            placeholder="هزینه اشتراک"
+                                            :disabled="yesStatus"
+                                        ></b-form-input>
+                                    </div>
+                                    <div class="col-1">
+                                        <b-button pill :disabled="yesStatus">تغییر</b-button>
+                                    </div>
+                                    <div class="col"></div>
+                                </div>
+                            </b-tab>
+                            <b-tab title="حذف کاربر">
+                                
+                                <div class="row master-center-content">
+                                    <div class="col-1"></div>
+                                    <div class="col">
+                                        <b-table :fields="userFields" :items="userItems" sticky-header="200px">
                                     </b-table>
+                                    </div>
+                                    <div class="col-1"></div>
                                 </div>
-                                 <div class="col-6">
-                                    <b-table :fields="userFields" :items="userItems" sticky-header="200px">
+
+                                <div class="row master-center-2-content">
+                                    <div class="col"></div>
+                                    <div class="col-5">
+                                        <b-form-select 
+                                        v-model="userSelected"
+                                        :disabled="!isAdmin" 
+                                        :options="userOptions">
+                                        </b-form-select>
+                                    </div>
+                                    <div class="col-1">
+                                        <b-button pill :disabled="!isAdmin">حذف</b-button>
+                                    </div>
+                                    <div class="col"></div>
+                                </div>
+                            </b-tab>
+                            <b-tab title="افزودن کاربر">
+                                <div class="row master-center-content">
+                                    <div class="col-1"></div>
+                                    <div class="col">
+                                        <b-table :fields="userFields" :items="userItems" sticky-header="200px">
                                     </b-table>
+                                    </div>
+                                    <div class="col-1"></div>
                                 </div>
-                            </div>
-                            <div class="row master-center-2-content">
-                                <div class="col-3">
-                                    <b-form-select 
-                                    v-model="feeSelected"
-                                    :disabled="!isAdmin" 
-                                    :options="options"></b-form-select>
-                                </div>
-                                <div class="col-2">
-                                    <b-form-input 
-                                    type="number" 
-                                    placeholder="هزینه اشتراک"
-                                    :disabled="!isAdmin"
-                                    ></b-form-input>
-                                </div>
-                                <div class="col-1">
-                                    <b-button pill :disabled="!isAdmin">تغییر</b-button>
-                                </div>
-                                <div class="col-5">
-                                    <b-form-select v-model="userSelected" :options="userOptions"></b-form-select>
-                                </div>
-                                <div class="col-1">
-                                    <b-button pill>حذف</b-button>
-                                </div>
-                            </div>
-                            <div class="row master-center-3-content">
-                                <div class="col-4 px-5 py-3">
-                                محتوا‌های کانال به صورت رایگان در اختیار مخاطبین قرار بگیرد؟
-                                </div>
-                                <div class="col-1 py-3">
-                                    <b-form-checkbox
-                                    id="checkbox-1"
-                                    v-model="yesStatus"
-                                    class="mx-3"
-                                    :disabled="!isAdmin"
-                                    >
-                                        بله
-                                    </b-form-checkbox>
-                                </div>
-                                <div class="col-1 py-3">
-                                    <b-form-checkbox
-                                    id="checkbox-2"
-                                    v-model="noStatus"
-                                    class="mx-3"
-                                    :disabled="!isAdmin"
-                                >
-                                        خیر
-                                    </b-form-checkbox>
-                                </div>
-                                <div class="col-3">
-                                    <b-form-select 
-                                    v-model="userSelected" 
-                                    :disabled="!isAdmin"
-                                    :options="userOptions"></b-form-select>
-                                </div>
-                                <div class="col-2">
-                                    <b-form-input 
-                                    :disabled="!isAdmin"
-                                    type="number" placeholder="درصد سود"></b-form-input>
-                                </div>
+                                <div class="row master-center-3-content">
+                                    <div class="col"></div>
+                                    <div class="col-3">
+                                        <b-form-select 
+                                        v-model="userSelected" 
+                                        :disabled="!isAdmin"
+                                        :options="userOptions"></b-form-select>
+                                    </div>
+                                    <div class="col-2">
+                                        <b-form-input 
+                                        :disabled="!isAdmin"
+                                        type="number" placeholder="درصد سود"></b-form-input>
+                                    </div>
                                 <div class="col-1">
                                     <b-button pill :disabled="!isAdmin">افزودن</b-button>
                                 </div>
-                            </div>
-                            <div class="row master-center-4-content">
-                                <div class="col-6">
-                                    <b-table :fields="categoryFields" :items="categoryItems" sticky-header="200px">
-                                    </b-table>
+                                <div class="col"></div>
                                 </div>
-                                <div class="col-5">
-                                    <b-form-input type="text" placeholder="نام دسته‌بندی"></b-form-input>
+                            </b-tab>
+                            <b-tab title="افزودن دسته‌بندی">
+                                <div class="row master-center-content">
+                                    <div class="col-1"></div>
+                                    <div class="col">
+                                        <b-table :fields="categoryFields" :items="categoryItems" sticky-header="200px">
+                                        </b-table>
+                                    </div>
+                                    <div class="col-1"></div>
                                 </div>
-                                <div class="col-1">
-                                    <b-button pill>افزودن</b-button>
+
+                                <div class="row master-center-2-content">
+                                    <div class="col"></div>
+                                    <div class="col-5">
+                                        <b-form-input type="text" placeholder="نام دسته‌بندی"></b-form-input>
+                                    </div>
+                                    <div class="col-1">
+                                        <b-button pill>افزودن</b-button>
+                                    </div>
+                                    <div class="col"></div>
                                 </div>
-                            </div>
-                            <div class="row master-bottom-content">
-                                <div class="col-5">
-                                    <b-form-select 
-                                    v-model="categorySelected" 
-                                    :options="categoryOptions"
-                                    :disabled="!isAdmin"
-                                    ></b-form-select>
+                            </b-tab>
+                            <b-tab title="حذف دسته‌بندی">
+                                <div class="row master-center-content">
+                                    <div class="col-1"></div>
+                                    <div class="col">
+                                        <b-table :fields="categoryFields" :items="categoryItems" sticky-header="200px">
+                                        </b-table>
+                                    </div>
+                                    <div class="col-1"></div>
                                 </div>
-                                <div class="col-1">
-                                    <b-button pill :disabled="!isAdmin">حذف</b-button>
+
+                                <div class="row master-center-2-content">
+                                    <div class="col"></div>
+                                    <div class="col-5">
+                                        <b-form-select 
+                                            v-model="categorySelected" 
+                                            :options="categoryOptions"
+                                            :disabled="!isAdmin"
+                                            ></b-form-select>
+                                    </div>
+                                    <div class="col-1">
+                                        <b-button pill :disabled="!isAdmin">حذف</b-button>
+                                    </div>
+                                    <div class="col"></div>
                                 </div>
-                                <div class="col">
-                                    <b-form-select 
-                                    v-model="categorySelected" 
-                                    :options="categoryOptions"
-                                    :disabled="!isAdmin"
-                                    ></b-form-select>
+                            </b-tab>
+                            <b-tab title="ویرایش دسته‌بندی">
+                                <div class="row master-center-content">
+                                    <div class="col-1"></div>
+                                    <div class="col">
+                                        <b-table :fields="categoryFields" :items="categoryItems" sticky-header="200px">
+                                        </b-table>
+                                    </div>
+                                    <div class="col-1"></div>
                                 </div>
-                                <div class="col">
-                                    <b-form-input 
-                                    type="text" 
-                                    placeholder="نام تغییر یافته دسته‌بندی"
-                                    :disabled="!isAdmin"
+
+                                <div class="row master-center-2-content">
+                                    <div class="col"></div>
+                                    <div class="col-3">
+                                        <b-form-select 
+                                            v-model="categorySelected" 
+                                            :options="categoryOptions"
+                                            :disabled="!isAdmin"
+                                            ></b-form-select>
+                                    </div>
+                                    <div class="col-2">
+                                        <b-form-input 
+                                        type="text" 
+                                        placeholder="نام تغییر یافته دسته‌بندی"
+                                        :disabled="!isAdmin"
                                     ></b-form-input>
+                                    </div>
+                                    <div class="col-1">
+                                        <b-button pill :disabled="!isAdmin">تغییر</b-button>
+                                    </div>
+                                    <div class="col"></div>
                                 </div>
-                                <div class="col-1">
-                                    <b-button pill :disabled="!isAdmin">تغییر</b-button>
-                                </div>
-                            </div>
-                        </div>
+                            </b-tab>
+                        </b-tabs>
                     </div>
 
 
@@ -199,7 +237,9 @@
                         <div class="col">
                         </div>
                         <div class="col-1">
-                            <font-awesome-icon icon="fa-solid fa-close" class="channel-info-icon" />
+                            <router-link to="/channel">
+                                <font-awesome-icon icon="fa-solid fa-close" class="channel-info-icon close-icon" />
+                            </router-link>
                         </div>
                     </div>
                     <div class="row center-content mt-5">
@@ -232,14 +272,29 @@
 
 <script>
 export default {
+    watch: {
+        yesStatus: function (val) {
+            if (val) {
+                this.noStatus = false;
+            }
+        },
+        noStatus: function (val) {
+            if (val) {
+                this.yesStatus = false;
+            }
+        }
+    },
     data(){
         return {
-            isUser: false,
+            isUser: true,
             addChannelShow: false,
             feeSelected: null,
             userSelected: null,
             categorySelected: null,
-            isAdmin:false,
+            yesStatus: false,
+            noStatus:false,
+            isAdmin:true,
+            channelId: this.$route.query.id,
             fields: [
             { key: 'time', label: 'مدت زمان' },
             { key: 'price', label: 'قیمت' },
@@ -301,14 +356,35 @@ export default {
 
     },
     methods: {
-    }
+        removeChannel(){
+            this.$router.push('/channel');
+        },
+        goProfile(){
+            this.$router.push({name: 'user'})
+        }
+    },
+
 
 }
 </script>
+<style>
+.nav-link{
+    color: black !important;
+}
+
+</style>
 
 <style scoped>
+.close-icon{
+    color: black !important;
+}
+.tabs{
+    background-color: #f0f1f2;
+    border-radius: 10px;
+
+}
 .table{
-    background-color: white !important;
+    background-color: rgb(237, 234, 234) !important;
     border-radius: 20px !important;
 }
 .b-table-sticky-header{
@@ -320,9 +396,11 @@ export default {
 }
 .exit-icon-container{
     bottom:0;
+    color: black !important;
 }
 .exit-icon{
-    margin-right: 35px;
+    margin-right: 55px;
+    color: black !important;
 }
 .form-control{
     border-radius: 20px !important;
@@ -340,7 +418,7 @@ export default {
     background-color: white;
 }
 .content{
-    background-color: rgb(226, 226, 226);
+    background-color: white;
 }
 .row{
     height: 100%;
@@ -389,6 +467,7 @@ export default {
 .top-content{
     height: 10%;
     background-color: white;
+    border-bottom: 1px solid black;
 }
 .center-content{
     height: 40%;

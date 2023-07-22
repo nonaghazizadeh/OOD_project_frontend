@@ -5,8 +5,12 @@
 </template>
 
 <style>
+@font-face {
+  font-family: "Vazirmatn VariableFont wght";
+  src: url('assets/fonts/Vazirmatn-VariableFont_wght.ttf');
+}
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Vazirmatn VariableFont wght";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

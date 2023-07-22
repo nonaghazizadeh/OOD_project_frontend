@@ -5,7 +5,7 @@
                 <div class="col-1 info">
                     <img src = "../assets/images/avatar.png" class = "rounded-circle avatar" width = "40" height = "40">
                     <div class="position-absolute exit-icon-container" >
-                        <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="exit-icon" />
+                        <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="exit-icon" @click="exit()" />
                     </div> 
                 </div>
                 <div class="col content no-float">
@@ -13,7 +13,7 @@
                         حساب کاربری
                     </p>
                     <div class="delete-user-button">
-                        <b-button v-show="editMode" variant="secondary">
+                        <b-button v-show="editMode" variant="secondary" @click="deleteUser()">
                             حذف حساب کاربری     
                         </b-button>
                     </div>
@@ -57,7 +57,7 @@
                                 <div class="col-10">
                                 </div>
                                 <div class="col-2">
-                                    <b-button v-show="editMode" variant="secondary">
+                                    <b-button v-show="editMode" variant="secondary" @click="updateUser()">
                                         ذخیره     
                                     </b-button>
                                 </div>
@@ -86,7 +86,17 @@ export default {
             ]
         }
     },
-    methods: {}
+    methods: {
+        deleteUser(){
+            this.$router.push('/')
+        },
+        updateUser(){
+            this.$router.push('/channel')
+        },
+        exit(){
+            this.$router.push('/')
+        }
+    }
 
 }
 </script>
@@ -99,7 +109,7 @@ export default {
     bottom:0;
 }
 .exit-icon{
-    margin-right: 35px;
+    margin-right: 55px;
 }
 .avatar {
     margin-top: 20px;

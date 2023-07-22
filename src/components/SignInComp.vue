@@ -24,14 +24,16 @@
                     </b-input-group>
                       <div class="form-group form-button mt-5">
                         <b-button variant="secondary">
-                          ورود     
+                          <router-link class="login-button" to="/channel">
+                            ورود     
+                          </router-link>
                         </b-button>
                       </div>
                   </form>
               </div>
               <div class="signup-image">
                   <figure><img src="../../images/signup-image.jpg" alt="sign up image"></figure>
-                  <router-link class="signup-image-link" to="/signup">ساخت حساب کاربری</router-link>
+                  <router-link class="signup-image-link" to="/">ساخت حساب کاربری</router-link>
               </div>
           </div>
       </div>
@@ -47,6 +49,9 @@
   }
   </script>
   <style scoped>
+  .login-button, .login-button:hover{
+    color: white !important;
+  }
   .signup-page {
     padding-top: 80px;
   }

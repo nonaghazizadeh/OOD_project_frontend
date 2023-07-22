@@ -5,9 +5,12 @@
                 <div class="col-1 info">
                     <img src = "../assets/images/avatar.png" class = "rounded-circle avatar" width = "40" height = "40">
                     <div class="position-absolute exit-icon-container" >
-                        <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="exit-icon" />
+                        <router-link class="exit-link" to="/">
+                            <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="exit-icon" />
+                        </router-link>
                     </div> 
                 </div>
+                <div class="col-1"></div>
                 <div class="col content no-float">
                     <div class="mt-4 add-channel-title-container">
                         <span class="add-channel-title">ایجاد کانال</span>
@@ -19,7 +22,7 @@
                         <div class="col-5">
                             <b-form-file
                                 v-model="file1"
-                                placeholder=" انتخاب تصویر کانال" 
+                                placeholder=""
                             ></b-form-file>
                         </div>
                     </div>
@@ -31,26 +34,27 @@
                             <b-form-input type="number" placeholder="درصد سود"></b-form-input>
                         </div>
                         <div class="col-2">
-                            <b-button variant="secondary"  class="add-manager-first-button">
+                            <b-button variant="secondary"  class="add-manager-first-button" @click="addManagerField()">
                                 <font-awesome-icon icon="fa-solid fa-plus"/>
                             </b-button>
                         </div>
                     </div>
-
-                    <div class="row px-5 py-3">
+                    <div v-if="managers.length !== 1" >
+                        <div v-for="manager in managers.slice(1)" :key="manager.id" class="row px-5 py-3">
                         <div class="col-5">
-                            <b-form-input type="text" placeholder="نام مدیر"></b-form-input>
+                            <b-form-input type="text" placeholder="نام مدیر" v-model="manager.name"></b-form-input>
                         </div>
                         <div class="col-5">
-                            <b-form-input type="number" placeholder="درصد سود"></b-form-input>
+                            <b-form-input type="number" placeholder="درصد سود" v-model="manager.profit" ></b-form-input>
                         </div>
                         <div class="col-2">
-                            <b-button variant="danger" class="remove-manager-button">
+                            <b-button variant="danger" class="remove-manager-button" @click="removeManagerField(manager.id)">
                                 <font-awesome-icon icon="fa-solid fa-minus"/>
                             </b-button>
-                            <b-button variant="secondary">
+                            <b-button variant="secondary" @click="addManagerField()">
                                 <font-awesome-icon icon="fa-solid fa-plus"/>
                             </b-button>
+                        </div>
                         </div>
                     </div>
                     <div class="row">
@@ -100,6 +104,11 @@
                             type="number" placeholder="هزینه اشتراک دوازده ماه"></b-form-input>
                         </div>
                     </div>
+                    <div>
+                        <b-button variant="secondary" class="add-channel-button" @click="addChannel()">
+                            ایجاد کانال
+                        </b-button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -124,7 +133,34 @@ export default {
         return {
             yesStatus: true,
             noStatus: false,
-            file1: null
+            file1: null,
+            managers:[
+                {
+                    id: 1,
+                    name: "",
+                    profit: ""
+                }
+            ]
+        }
+    },
+    methods:{
+        addManagerField(){
+            this.managers.push({
+                id: this.managers.length + 1,
+                name: "",
+                profit: ""
+            })
+        },
+        removeManagerField(managerId){
+            for (let i = 0; i < this.managers.length; i++) {
+                if (this.managers[i].id === managerId) {
+                    this.managers.splice(i, 1);
+                }
+            }
+            
+        },
+        addChannel(){
+            this.$router.push('/channel');
         }
     }
 
@@ -132,8 +168,15 @@ export default {
 </script>
 
 <style>
+.add-channel-button{
+    margin-top: 20px;
+    margin-right: 930px;
+}
+.exit-link{
+    color: black !important;
+}
 .add-channel-title{
-    margin-right: -200px;
+    margin-right: -250px;
 }
 .avatar {
     margin-top: 20px;
@@ -153,7 +196,7 @@ export default {
     height: 100%;
 }
 .exit-icon{
-    margin-right: 35px;
+    margin-right: 55px;
 }
 .add-channel-title{
     font-weight: bold;
@@ -170,7 +213,7 @@ export default {
     bottom:0;
 }
 .custom-file-label::after{
-    content: "آپلود" !important;
+    content: "آپلود تصویر " !important;
 }
 .custom-file-label{
     text-align: right !important;
