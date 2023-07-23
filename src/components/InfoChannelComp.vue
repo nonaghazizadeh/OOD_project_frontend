@@ -31,7 +31,39 @@
                     </div>
                     <div class="tabs my-5 py-5 ">
                         <b-tabs content-class="mt-5">
-                            <b-tab title="حق اشتراک" active>
+                            <b-tab title="ویرایش اطلاعات کانال" active :disabled="!isAdmin">
+                                <div class="row">
+                                    <div class="col"></div>
+                                    <div class="col-3  py-3">
+                                        <b-form-input type="text" placeholder="نام کانال"></b-form-input>
+                                    </div>
+                                    <div class="col-3 py-3">
+                                        <b-form-file
+                                        v-model="file1"
+                                        placeholder=""
+                                        ></b-form-file>
+                                    </div>
+            
+                                    <div class="col"></div>
+                                </div>
+                                <div class="row master-center-content">
+                                    <div class="col-3"></div>
+                                    <div class="col">
+                                        <b-textarea
+                                        placeholder="توضیحات کانال"
+                                        rows="3"
+                                        max-rows="6"
+                                        ></b-textarea>
+                                    </div>
+                                    <div class="col-3"></div>
+                                </div>
+                                <div class="row">
+                                    <b-button variant="secondary" class="add-channel-button" @click="addChannel()">
+                                        ویرایش کانال
+                                    </b-button>
+                                </div>
+                            </b-tab>
+                            <b-tab title="حق اشتراک">
                                 <div class="row">
                                     <div class="col"></div>
                                     <div class="col-4 px-5 py-3">
@@ -72,7 +104,7 @@
                                     <div class="col-3">
                                         <b-form-select 
                                         v-model="feeSelected"
-                                        :disabled="yesStatus"
+                                        :disabled="yesStatus || !isAdmin"
                                         :options="options">
                                         </b-form-select>
                                     </div>
@@ -80,11 +112,11 @@
                                         <b-form-input 
                                             type="number" 
                                             placeholder="هزینه اشتراک"
-                                            :disabled="yesStatus"
+                                            :disabled="yesStatus || !isAdmin"
                                         ></b-form-input>
                                     </div>
                                     <div class="col-1">
-                                        <b-button pill :disabled="yesStatus">تغییر</b-button>
+                                        <b-button pill :disabled="yesStatus || !isAdmin">تغییر</b-button>
                                     </div>
                                     <div class="col"></div>
                                 </div>
@@ -105,17 +137,17 @@
                                     <div class="col-5">
                                         <b-form-select 
                                         v-model="userSelected"
-                                        :disabled="!isAdmin" 
+                                    
                                         :options="userOptions">
                                         </b-form-select>
                                     </div>
                                     <div class="col-1">
-                                        <b-button pill :disabled="!isAdmin">حذف</b-button>
+                                        <b-button pill>حذف</b-button>
                                     </div>
                                     <div class="col"></div>
                                 </div>
                             </b-tab>
-                            <b-tab title="افزودن کاربر">
+                            <b-tab title="افزودن مدیر">
                                 <div class="row master-center-content">
                                     <div class="col-1"></div>
                                     <div class="col">
@@ -286,14 +318,14 @@ export default {
     },
     data(){
         return {
-            isUser: true,
+            isUser: false,
             addChannelShow: false,
             feeSelected: null,
             userSelected: null,
             categorySelected: null,
             yesStatus: false,
             noStatus:false,
-            isAdmin:true,
+            isAdmin:false,
             channelId: this.$route.query.id,
             fields: [
             { key: 'time', label: 'مدت زمان' },

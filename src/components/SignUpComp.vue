@@ -12,7 +12,7 @@
                           <font-awesome-icon icon="fa-solid fa-envelope"/>
                         </b-input-group-text>
                       </template>
-                      <b-form-input placeholder="ایمیل"></b-form-input>
+                      <b-form-input placeholder="ایمیل" v-model="email"></b-form-input>
                     </b-input-group>
                     <b-input-group class="mt-3">
                       <template #prepend>
@@ -20,7 +20,7 @@
                           <font-awesome-icon icon="fa-solid fa-phone"/>
                         </b-input-group-text>
                       </template>
-                      <b-form-input placeholder="تلفن همراه"></b-form-input>
+                      <b-form-input placeholder="تلفن همراه" v-model="phone"></b-form-input>
                     </b-input-group>
                     <b-input-group class="mt-3">
                       <template #prepend>
@@ -28,13 +28,14 @@
                           <font-awesome-icon icon="fa-solid fa-lock"/>
                         </b-input-group-text>
                       </template>
-                      <b-form-input placeholder="رمزعبور"></b-form-input>
+                      <b-form-input placeholder="رمزعبور" v-model="password"></b-form-input>
                     </b-input-group>
                     <div class="form-group form-button mt-5">
-                      <b-button variant="secondary">
-                        <router-link class="login-button" to="/channel">
-                          ثبت‌نام     
-                        </router-link>
+                      <b-button variant="secondary" @click="signup()">
+						<b-spinner v-if="loading" label="Spinning"></b-spinner>
+						<span v-else>
+							ثبت‌نام     
+						</span>
                         </b-button>
                     </div>
                 </form>
@@ -50,7 +51,65 @@
 </template>
 
 <script>
+import Vue from "vue";
+import axios from "axios";
+import VueAxios from "vue-axios";
+Vue.use(VueAxios, axios);
+import {BVToastPlugin } from "bootstrap-vue";
+Vue.use(BVToastPlugin);
+
+
 export default {
+	data(){
+		return{
+			email: "",
+			phone: "",
+			password: "",
+			loading: false,
+		}
+	},
+	methods:{
+		signup(){
+			this.loading = true;
+			let api = "http://127.0.0.1:8000/user/register/";
+			if (this.email == ""){
+				const data = {
+					phone: this.phone,
+					password: this.password,
+				}
+				Vue.axios.post(api, data)
+				.then(response => {
+					console.log(response)
+					// set token
+					this.loading = false;
+					this.$router.push('/signin')
+				}).catch((e) => {
+					console.log(e)
+					this.$bvToast.toast(e.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+					this.loading = false;
+				})
+			}
+			else if(this.phone == "" || (this.phone != "" && this.email != "")){
+				const data = {
+					email: this.email,
+					password: this.password,
+				}
+				Vue.axios.post(api, data)
+				.then(response => {
+					console.log(response)
+					// set token
+					this.loading = false;
+					this.$router.push('/signin')
+				}).catch((e) => {
+					console.log(e)
+					this.$bvToast.toast(e.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+					this.loading = false;
+				})
+
+			}
+
+		}
+	}
 }
 </script>
 
