@@ -9,10 +9,20 @@
                     </div> 
                 </div>
                 <div class="col content no-float">
-                    <p class="mt-5 user-title">
-                        حساب کاربری
-                    </p>
-                    <div class="delete-user-button">
+                    <div class="row top-content">
+                        <div class="col-2 text-right">
+                            <h5 class="channel-info">حساب کاربری</h5>        
+                        </div>
+                        <div class="col">
+                        </div>
+                        <div class="col-1">
+                            <router-link to="/channel" class="close-icon">
+                                <font-awesome-icon icon="fa-solid fa-close" class="channel-info-icon close-icon" />
+                            </router-link>
+                        </div>
+                    </div>
+
+                    <div class="delete-user-button mt-5">
                         <b-button v-show="editMode" variant="secondary" @click="deleteUser()">
                             حذف حساب کاربری     
                         </b-button>
@@ -27,7 +37,7 @@
                                     <b-form-file
                                         class=""
                                         v-model="file1"
-                                        placeholder=" انتخاب عکس " 
+                                        placeholder="" 
                                     ></b-form-file>
                                 </div>
                             </div>
@@ -41,7 +51,7 @@
                                 </div>
                             </div>
                             <div class="row cetner-3-add-content px-5">
-                                <div class="col-6">
+                                <div class="col-4">
                                     <b-input-group append="تومان">
                                         <b-form-input placeholder=" موجودی کیف پول: ۲۰۰۰۰" disabled>
                                         </b-form-input>
@@ -49,7 +59,21 @@
                                 </div>
                                 <div class="col-2">
                                     <b-button variant="secondary">
-                                        شارژ کیف پول     
+                                        <b-spinner v-if="loading" label="Spinning"></b-spinner>
+                                        <span v-else>
+                                            شارژ کیف پول   
+                                        </span>   
+                                    </b-button>
+                                </div>
+                                <div class="col-3">
+                                        <b-form-input type="number" placeholder="مبلغ برداشتی" v-model="walletMoney"></b-form-input>
+                                    </div>
+                                <div class="col-2">
+                                    <b-button variant="secondary" @click="withDraw()">
+                                        <b-spinner v-if="loading" label="Spinning"></b-spinner>
+                                        <span v-else>
+                                            برداشت کیف پول   
+                                        </span>
                                     </b-button>
                                 </div>
                             </div>
@@ -58,7 +82,10 @@
                                 </div>
                                 <div class="col-2">
                                     <b-button v-show="editMode" variant="secondary" @click="updateUser()">
-                                        ذخیره     
+                                        <b-spinner v-if="loading" label="Spinning"></b-spinner>
+                                        <span v-else>
+                                            ذخیره   
+                                        </span>  
                                     </b-button>
                                 </div>
                             </div>
@@ -71,14 +98,20 @@
 </template>
 
 <script>
+import Vue from "vue";
+import axios from "axios";
+import VueAxios from "vue-axios";
+Vue.use(VueAxios, axios);
 export default {
     data(){
         return {
+            loading: false,
             editMode: true,
             isJoin: true,
             isUser: false,
             modalShow: false,
             addChannelShow: false,
+            walletMoney: '',
             categoryOptions: [
             { value: 1, text: 'خبر' },
             { value: 2, text: 'ورزش' },
@@ -95,6 +128,28 @@ export default {
         },
         exit(){
             this.$router.push('/')
+        },
+        withDraw(){
+            this.loading = true;
+            let api = "http://79.127.54.112:5000/Wallet/Withdraw/"+ this.walletMoney;
+            const data = null;
+            Vue.axios.put(api, data,{
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+			.then(response => {
+                console.log(response)
+                this.$bvToast.toast(response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.walletMoney = ''
+                this.loading = false;
+            }).catch((e) => {
+                console.log(e)
+                this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                this.walletMoney = ''
+                this.loading = false;
+            })
+
         }
     }
 

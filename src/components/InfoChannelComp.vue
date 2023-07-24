@@ -13,10 +13,10 @@
                 <div v-show="!isUser" class="col content no-float">
                     <div class="row top-content">
                         <div class="col-1">
-                            <img src = "../assets/images/ISNA.jpeg" class = "rounded-circle channel-image" width = "35" height = "35">
+                            <img src="../assets/images/channelimg.jpeg" class = "rounded-circle channel-image" width = "35" height = "35">
                         </div>
                         <div class="col-2 text-right">
-                            <h5 class="channel-info">کانال ایسنا</h5>        
+                            <h5 class="channel-info">نام کانال</h5>        
                         </div>
                         <div class="col">
                         </div>

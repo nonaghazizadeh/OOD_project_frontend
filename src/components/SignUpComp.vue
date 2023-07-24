@@ -28,7 +28,7 @@
                           <font-awesome-icon icon="fa-solid fa-lock"/>
                         </b-input-group-text>
                       </template>
-                      <b-form-input placeholder="رمزعبور" v-model="password"></b-form-input>
+                      <b-form-input type="password" placeholder="رمزعبور" v-model="password"></b-form-input>
                     </b-input-group>
                     <div class="form-group form-button mt-5">
                       <b-button variant="secondary" @click="signup()">
@@ -71,11 +71,11 @@ export default {
 	methods:{
 		signup(){
 			this.loading = true;
-			let api = "http://127.0.0.1:8000/user/register/";
+			let api = "http://79.127.54.112:5000/User/SignUp";
 			if (this.email == ""){
 				const data = {
-					phone: this.phone,
-					password: this.password,
+					PhoneNumber: this.phone,
+					Password: this.password,
 				}
 				Vue.axios.post(api, data)
 				.then(response => {
@@ -85,14 +85,14 @@ export default {
 					this.$router.push('/signin')
 				}).catch((e) => {
 					console.log(e)
-					this.$bvToast.toast(e.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+					this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
 					this.loading = false;
 				})
 			}
 			else if(this.phone == "" || (this.phone != "" && this.email != "")){
 				const data = {
-					email: this.email,
-					password: this.password,
+					Email: this.email,
+					Password: this.password,
 				}
 				Vue.axios.post(api, data)
 				.then(response => {
@@ -102,7 +102,7 @@ export default {
 					this.$router.push('/signin')
 				}).catch((e) => {
 					console.log(e)
-					this.$bvToast.toast(e.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+					this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
 					this.loading = false;
 				})
 

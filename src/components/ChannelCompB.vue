@@ -102,8 +102,11 @@
                         <b-form-input v-model="searchContentTitle"></b-form-input>
                     </b-input-group>
                     <div :class="[isUser ? 'row center-content-user':'row center-content']">
-                        <div v-if="contentSearchMode" class="col-8">
-                            <div v-for="item in searchedContentList" :key="item.id">
+                        <div class="col-8">
+                            <b-spinner class="channel-loader" v-if="contentLoading" label="Spinning"></b-spinner>
+                        </div>
+                        <div v-if="contentSearchMode && !contentLoading" class="col-8">
+                            <div v-for="item in searchedContentList" :key="item.contentId">
                                 <div class="card mt-3">
                                     <div class="card-body">
                                         <div class="mb-3">
@@ -118,17 +121,21 @@
                                             </span>
                                         </div>
                                         <p v-if="isUser" class="card-text">
-                                            {{ item.summary }}
+                                            <a :href="`http://79.127.54.112:5000/${item.fileName}`" target="_blank">
+                                            {{ item.fileName }}
+                                            </a>
                                         <span v-show="isUser" class="card-link-span">
                                             <a class="card-link" href="" @click.prevent="openModal" :class="{'fa-disabled': isNotJoin}">ادامه مطلب ...</a>
                                         </span>
                                         </p> 
                                         <p v-else class="card-text">
-                                            {{ item.content }}
+                                            <a :href="`http://79.127.54.112:5000/${item.fileName}`" target="_blank">
+                                                {{ item.fileName }}
+                                            </a>
                                         </p>
 
                                         <span class="card-link-span">
-                                            <a class="card-link">۲۳\۳\۱۴۰۱</a>
+                                            <a class="card-link">{{ new Date(item.createdAt).toLocaleDateString() }}</a>
                                         </span>
                                         <div>
                                             <font-awesome-icon 
@@ -148,7 +155,7 @@
                             <div class="col"></div>
                         </div>
                         <div v-else class="col-8">
-                            <div v-for="item in channels[channelIndex].data" :key="item.id">
+                            <div v-for="item in contents" :key="item.contentId">
                                 <div class="card mt-3">
                                     <div class="card-body">
                                         <div class="mb-3">
@@ -163,17 +170,21 @@
                                             </span>
                                         </div>
                                         <p v-if="isUser" class="card-text">
-                                            {{ item.summary }}
+                                            <a :href="`http://79.127.54.112:5000/${item.fileName}`" target="_blank">
+                                            {{ item.fileName }}
+                                            </a>
                                         <span v-show="isUser" class="card-link-span">
                                             <a class="card-link" href="" @click.prevent="openModal" :class="{'fa-disabled': isNotJoin}">ادامه مطلب ...</a>
                                         </span>
                                         </p> 
                                         <p v-else class="card-text">
-                                            {{ item.content }}
+                                            <a :href="`http://79.127.54.112:5000/${item.fileName}`" target="_blank">
+                                                {{ item.fileName }}
+                                            </a>
                                         </p>
 
                                         <span class="card-link-span">
-                                            <a class="card-link">۲۳\۳\۱۴۰۱</a>
+                                            <a class="card-link">{{ new Date(item.createdAt).toLocaleDateString() }}</a>
                                         </span>
                                         <div>
                                             <font-awesome-icon 
@@ -267,7 +278,8 @@ export default {
             searchedContentList: [],
             channelSearchMode: false,
             contentSearchMode: false,
-            channels: []
+            channels: [],
+            contents: [],
         }
     },
     methods: {
@@ -294,6 +306,7 @@ export default {
             })
             .then(response => {
                 console.log(response)
+                this.contents = response.data.message;
                 this.contentLoading = false
             }) 
         },
@@ -412,6 +425,9 @@ export default {
 .row{
     height: 100%;
 }
+.card-text a{
+    color:black !important;
+}
 .search-icon {
     padding: 0.8rem 0.75rem !important;
     border-top-right-radius: 0px !important;
@@ -462,6 +478,8 @@ export default {
     font-size: 13px;
     color: black;
     text-decoration: none;
+    text-align: left !important;
+    direction: ltr !important;
 }
 .card-body{
     text-align: right;

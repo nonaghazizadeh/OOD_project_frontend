@@ -3,7 +3,7 @@
     <div dir="rtl" class="channel-page container-fluid">
             <div class="row channel-container">
                 <div class="col-1 info">
-                    <img src = "../assets/images/avatar.png" class = "rounded-circle avatar" width = "40" height = "40">
+                    <img src = "../assets/images/avatar.png" class = "rounded-circle avatar" width = "40" height = "40" @click="goProfile()">
                     <div class="position-absolute exit-icon-container" >
                         <router-link class="exit-link" to="/">
                             <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="exit-icon" />
@@ -144,6 +144,9 @@ export default {
         }
     },
     methods:{
+        goProfile(){
+            this.$router.push({name: 'user'})
+        },
         addManagerField(){
             this.managers.push({
                 id: this.managers.length + 1,
@@ -213,7 +216,7 @@ export default {
     bottom:0;
 }
 .custom-file-label::after{
-    content: "آپلود تصویر " !important;
+    content: "آپلود" !important;
 }
 .custom-file-label{
     text-align: right !important;

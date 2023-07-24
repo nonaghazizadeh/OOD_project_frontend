@@ -3,60 +3,20 @@
         <div dir="rtl" class="channel-page container-fluid">
             <div class="row">
                 <div class="col-1 info">
-                    <img src = "../assets/images/avatar.png" class = "rounded-circle avatar" width = "40" height = "40">
+                    <img src = "../assets/images/avatar.png" class = "rounded-circle avatar" width = "40" height = "40" @click="goProfile()">
                     <div class="position-absolute exit-icon-container" >
-                        <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="exit-icon" />
+                        <router-link class="exit-link" to="/">
+                            <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="exit-icon" />
+                        </router-link>
                     </div> 
-                </div>
-                <div class="col-2 sidebar no-float">
-                    <div class="mt-4 sidebar-top">
-                        <span>
-                            لیست‌کانال‌ها
-                        </span>
-                        <span>
-                            <font-awesome-icon icon="fa-solid fa-plus" class="add-icon"/>
-                        </span>
-                    </div>
-                    <div class="input-group mb-3  mt-3">
-                        <b-input-group class="mt-3">
-                        <template #append>
-                        <b-input-group-text>
-                            <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
-                        </b-input-group-text>
-                        </template>
-                        <b-form-input></b-form-input>
-                        </b-input-group>
-                    </div>
-                    <div class="list-group mt-3 w-100 channel-list">
-                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
-                            <div class="d-flex w-100 justify-content-between">
-                                <img src = "../assets/images/ISNA.jpeg" class = "rounded-circle" width = "25" height = "25">
-                                <h5 class="mb-1 ">کانال ایسنا</h5>
-                                <small>سه روز پیش</small>
-                            </div>
-                            <small>
-                                بازگشایی مدارس در تهران ...
-                            </small>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                            <div class="d-flex w-100 justify-content-between">
-                                <img src = "../assets/images/currency.png" class = "rounded-circle" width = "25" height = "25">
-                                <h5 class="mb-1">کانال ارز</h5>
-                                <small>چهار روز پیش</small>
-                            </div>
-                            <small>
-                                قیمت دلار امروز ۲۰۰۰۰ تومان ...
-                            </small>
-                        </a>
-                    </div>
                 </div>
                 <div class="col content no-float">
                     <div class="row top-content">
                         <div class="col-1">
-                            <img src = "../assets/images/ISNA.jpeg" class = "rounded-circle channel-image" width = "35" height = "35">
+                            <img src = "../assets/images/channelimg.jpeg" class = "rounded-circle channel-image" width = "35" height = "35">
                         </div>
                         <div class="col-2 text-right">
-                            <h5 class="channel-info">کانال ایسنا</h5>        
+                            <h5 class="channel-info">{{channelName}}</h5>        
                         </div>
                         <div class="col">
                         </div>
@@ -68,10 +28,15 @@
                         <div class="col">
                             <div class="row center-add-content px-5 py-3 mt-5">
                                 <div class="col-6">
-                                    <b-form-input type="text" placeholder="عنوان محتوا"></b-form-input>
+                                    <b-form-input type="text" placeholder="عنوان محتوا" v-model="contentTitle"></b-form-input>
                                 </div>
                                 <div class="col-6">
-                                    <b-form-select v-model="selected" :options="categoryOptions"></b-form-select>
+                                    <b-form-select v-model="selected" :options="categoryOptions" disabled></b-form-select>
+                                </div>
+                            </div>
+                            <div class="row center-add-content px-5 py-2">
+                                <div class="col-6">
+                                    <b-form-input type="text" placeholder="توضیحات" v-model="contentDescription"></b-form-input>
                                 </div>
                             </div>
                             <div class="row center-2-add-content px-5 py-2">
@@ -83,6 +48,7 @@
                                     id="checkbox-1"
                                     button-variant="secondary"
                                     v-model="yesStatus"
+                                    disabled
                                     class="mx-3"
                                     >
                                         بله
@@ -92,6 +58,7 @@
                                     <b-form-checkbox
                                         id="checkbox-2"
                                         v-model="noStatus"
+                                        disabled
                                         class="mx-3"
                                     >
                                     خیر
@@ -110,6 +77,7 @@
                                     <b-form-checkbox
                                     id="checkbox-3"
                                     v-model="isText"
+                                    disabled
                                     class="mx-3"
                                     >
                                         متن
@@ -119,6 +87,7 @@
                                     <b-form-checkbox
                                         id="checkbox-4"
                                         v-model="isMedia"
+                                        disabled
                                         class="mx-3 success"
                                     >
                                         ویدیو، عکس، فایل صوتی
@@ -126,10 +95,11 @@
                                 </div>
                                 <div class="col-6">
                                     <b-form-file
-                                        class=""
-                                        v-model="file1"
+                                        class="input-content-file"
+                                        v-model="file"
                                         :disabled="editMode || !isMedia"
-                                        placeholder=" انتخاب محتوا " 
+                                        placeholder="" 
+                                        @change="handleFileUpload( $event )"
                                     ></b-form-file>
                                 </div>
                             </div>
@@ -137,6 +107,7 @@
                                 <div class="col-12">
                                     <b-form-textarea
                                         id="textarea-rows"
+                                        v-model="contentText"
                                         placeholder="متن خود را وارد کنید"
                                         rows="5"
                                         :disabled="!isText"
@@ -165,6 +136,11 @@
 </template>
 
 <script>
+import Vue from "vue";
+import axios from "axios";
+import VueAxios from "vue-axios";
+Vue.use(VueAxios, axios);
+
 export default {
     created(){
 
@@ -197,8 +173,14 @@ export default {
             yesStatus: true,
             noStatus: false,
             isText: false,
-            isMedia: false,
+            isMedia: true,
             editMode: (this.$route.query.edit === "true"),
+            channelId: this.$route.query.id,
+            contentTitle: '',
+            contentDescription:'',
+            contentText:'',
+            file:'',
+            channelName:this.$route.query.name,
             isJoin: true,
             isUser: false,
             modalShow: false,
@@ -214,7 +196,36 @@ export default {
     },
 
     methods: {
+        goProfile(){
+            this.$router.push({name: 'user'})
+        },
         addContent(){
+            let api= "http://79.127.54.112:5000/Content/Add/" + this.channelId
+            let formData = new FormData();
+            formData.append('file', this.file);
+            formData.append('Title', this.contentTitle);
+            if (this.isText === true){
+                formData.append('Type', 'Text')
+            }
+            else{
+                formData.append('Type', 'Music')
+            }
+            formData.append('Description', this.contentDescription);
+            console.log(formData)
+            Vue.axios.post(api, formData,{
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+			.then(response => {
+                console.log(response)
+                this.loading = false;
+                this.$router.push('/channel')
+            }).catch((e) => {
+                console.log(e)
+                this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                this.loading = false;
+            })
             this.$router.push('/channel')
         },
         editContent(){
@@ -222,15 +233,19 @@ export default {
         },
         close(){
             this.$router.push('/channel')
-        }
+        },
+        handleFileUpload(event){
+            this.file = event.target.files[0];
+        },
     }
 
 }
 </script>
 
 <style scoped>
+
 .input-content-file{
-    margin-right: 50px !important;
+    text-align-last: left !important;
 }
 .exit-icon-container{
     bottom:0;
@@ -251,7 +266,7 @@ export default {
     background-color: white;
 }
 .content{
-    background-color: rgb(226, 226, 226);
+    background-color: white;
 }
 .row{
     height: 100%;

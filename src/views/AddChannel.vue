@@ -5,7 +5,7 @@
 </template>
   
 <script>
-import AddChannelComp from '../components/AddChannelComp.vue'
+import AddChannelComp from '../components/AddChannelCompB.vue'
   export default {
     components: {
       AddChannelComp
