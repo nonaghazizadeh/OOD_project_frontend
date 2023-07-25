@@ -21,7 +21,7 @@
                         <div class="col">
                         </div>
                         <div class="col-1">
-                            <font-awesome-icon icon="fa-solid fa-close" class="channel-info-icon" @click="close()"/>
+                            <font-awesome-icon v-show="!loading" icon="fa-solid fa-close" class="channel-info-icon" @click="close()"/>
                         </div>
                     </div>
                     <div class="row center-add-content">
@@ -120,7 +120,10 @@
                                 </div>
                                 <div class="col-2">
                                     <b-button v-show="!editMode" variant="secondary" @click="addContent()">
-                                        افزودن     
+                                        <b-spinner v-if="loading" label="Spinning"></b-spinner>
+                                        <span v-else>
+                                            افزودن 
+                                        </span>
                                     </b-button>
                                     <b-button v-show="editMode" variant="secondary" @click="editContent()">
                                         تغییر     
@@ -186,6 +189,7 @@ export default {
             modalShow: false,
             addChannelShow: false,
             selected: null,
+            loading: false,
             categoryOptions: [
             { value: null, text: 'انتخاب دسته‌بندی' },
             { value: 'a', text: 'خبر' },
@@ -200,6 +204,7 @@ export default {
             this.$router.push({name: 'user'})
         },
         addContent(){
+            this.loading = true;
             let api= "http://79.127.54.112:5000/Content/Add/" + this.channelId
             let formData = new FormData();
             formData.append('file', this.file);
@@ -219,14 +224,16 @@ export default {
             })
 			.then(response => {
                 console.log(response)
-                this.loading = false;
-                this.$router.push('/channel')
+                setTimeout(() => {
+                    this.loading = false;
+                    this.$router.push('/channel')
+                }, 2000);
+
             }).catch((e) => {
                 console.log(e)
                 this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
-            this.$router.push('/channel')
         },
         editContent(){
             this.$router.push('/channel')
@@ -297,6 +304,7 @@ export default {
 .top-content{
     height: 10%;
     background-color: white;
+    border-bottom: 1px solid black;
 }
 .center-add-content{
     height: 25%;

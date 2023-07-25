@@ -16,8 +16,6 @@
                     <div class="mt-4 sidebar-top">
                         <span>
                             لیست‌کانال‌ها
-                        </span>
-                        <span class="mr-1 pr-2">
                             <router-link to="/add-channel" class="add-channel-icon">
                                 <font-awesome-icon icon="fa-solid fa-plus" class="add-icon"/>
                             </router-link>
@@ -405,7 +403,7 @@ export default {
     bottom:0;
 }
 .exit-icon{
-    margin-right: 55px;
+    margin-right: 35px;
 }
 .avatar {
     margin-top: 20px;
@@ -503,7 +501,10 @@ export default {
     font-weight: bold;
 }
 .add-icon{
-    margin-right: 140px;
+    margin-right: 70px;
+}
+.add-icon:hover{
+    cursor: pointer;
 }
 .input-group-text{
     border-top-right-radius: 0 !important;

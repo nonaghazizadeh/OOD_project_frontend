@@ -431,7 +431,7 @@ export default {
     color: black !important;
 }
 .exit-icon{
-    margin-right: 55px;
+    margin-right: 35px;
     color: black !important;
 }
 .form-control{

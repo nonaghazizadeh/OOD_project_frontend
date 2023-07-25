@@ -8,6 +8,7 @@
                         <router-link class="exit-link" to="/">
                             <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="exit-icon" />
                         </router-link>
+
                     </div> 
                 </div>
                 <div class="col">
@@ -19,7 +20,7 @@
                         <div class="col">
                         </div>
                         <div class="col-1">
-                            <router-link to="/channel" class="close-icon">
+                            <router-link to="/channel" class="close-icon" v-show="!loading">
                                 <font-awesome-icon icon="fa-solid fa-close" class="channel-info-icon close-icon" />
                             </router-link>
                         </div>
@@ -33,7 +34,11 @@
                     </div>
                     <div>
                         <b-button variant="secondary" class="add-channel-button" @click="addChannel()">
+                            <b-spinner v-if="loading">
+                            </b-spinner>
+                            <span v-else>
                             ایجاد کانال
+                            </span>
                         </b-button>
                     </div>
 
@@ -63,6 +68,7 @@ export default {
     },
     data() {
         return {
+            loading: false,
             yesStatus: true,
             noStatus: false,
             file1: null,
@@ -95,6 +101,7 @@ export default {
         addChannel(){
             let api = "http://79.127.54.112:5000/Channel/"+ this.channelName;
             const data = null;
+            this.loading = true;
             Vue.axios.post(api, data,{
             headers: {
                 'X-Auth-Token': localStorage.getItem('token')
@@ -102,14 +109,16 @@ export default {
             })
 			.then(response => {
                 console.log(response)
-                this.loading = false;
-                this.$router.push('/channel')
+                setTimeout(() => {
+                    this.loading = false;
+                    this.$router.push('/channel')
+                }, 2000);
             }).catch((e) => {
                 console.log(e)
                 this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
-            this.$router.push('/channel');
+
         }
     }
 }
@@ -144,7 +153,7 @@ export default {
       height: 100%;
   }
   .exit-icon{
-      margin-right: 55px;
+      margin-right: 35px;
   }
   .add-channel-title{
       font-weight: bold;

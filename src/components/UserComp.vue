@@ -127,6 +127,7 @@ export default {
             this.$router.push('/channel')
         },
         exit(){
+            
             this.$router.push('/')
         },
         withDraw(){
@@ -164,7 +165,7 @@ export default {
     bottom:0;
 }
 .exit-icon{
-    margin-right: 55px;
+    margin-right: 35px;
 }
 .avatar {
     margin-top: 20px;

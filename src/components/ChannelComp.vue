@@ -17,7 +17,7 @@
                         <span>
                             لیست‌کانال‌ها
                         </span>
-                        <span class="mr-1 pr-2">
+                        <span class="">
                             <router-link to="/add-channel" class="add-channel-icon">
                                 <font-awesome-icon icon="fa-solid fa-plus" class="add-icon"/>
                             </router-link>
@@ -392,7 +392,7 @@ export default {
     bottom:0;
 }
 .exit-icon{
-    margin-right: 55px;
+    margin-right: 35px;
 }
 .avatar {
     margin-top: 20px;
@@ -436,7 +436,7 @@ export default {
     color: black;
 }
 .top-content{
-    height: 10%;
+    height: 3% !important;
     background-color: white;
 }
 .center-content{
