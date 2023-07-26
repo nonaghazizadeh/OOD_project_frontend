@@ -98,7 +98,6 @@ export default {
 				Vue.axios.post(api, data)
 				.then(response => {
 					console.log(response)
-					// set token
 					this.loading = false;
 					this.$router.push('/channel')
 				}).catch((e) => {

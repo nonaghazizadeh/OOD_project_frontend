@@ -86,7 +86,7 @@
                             <font-awesome-icon icon="fa-solid fa-file-circle-plus" class="channel-info-icon" @click="goToAddContent()"/>
                         </div>
                         <div class="col-1">
-                            <router-link :to="{name: 'infochannel', query: {id : channels[channelIndex].id}}" class="info-channel-router">
+                            <router-link :to="{name: 'infochannel', query: {id : channelIndex}}" class="info-channel-router">
                                 <font-awesome-icon icon="fa-solid fa-circle-info" class="channel-info-icon"/>
                             </router-link>
                         </div>
@@ -290,13 +290,9 @@ export default {
         selectChannel(id){
             this.contentLoading = true
             this.activeTag = id
-            for (let i = 0; i < this.channels.length; i++) {
-                if (this.channels[i].id === id) {
-                    this.channelIndex = i
-                    break
-                }
-            }
-            let api = 'http://79.127.54.112:5000/Content/GetAll/' + this.channelIndex
+            this.channelIndex = id
+            console.log(this.channelIndex)
+            let api = 'http://79.127.54.112:5000/Content/GetAll/' + id
             Vue.axios.get(api, {
             headers: {
                 'X-Auth-Token': localStorage.getItem('token')
@@ -331,7 +327,8 @@ export default {
             this.$router.push({name: 'user'})
         },
         goToAddContent(){
-            this.$router.push({name: 'addcontent', query:{edit: false, id: this.channelIndex, name: this.channels[this.channelIndex].name}})
+            console.log(this.channels[this.channelIndex].id)
+            this.$router.push({name: 'addcontent', query:{edit: false, id: this.channels[this.channelIndex].id, name: this.channels[this.channelIndex].name}})
         },
         goToEditContent(){
             this.$router.push({name: 'addcontent', query:{edit: true}})
@@ -450,7 +447,7 @@ export default {
     color: black;
 }
 .top-content{
-    height: 10%;
+    height: 5%;
     background-color: white;
 }
 .center-content{
