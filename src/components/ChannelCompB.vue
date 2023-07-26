@@ -38,7 +38,7 @@
                                 <div class="d-flex w-100 justify-content-between">
                                     <img rc="../assets/images/channelimg.jpeg" class = "rounded-circle" width = "25" height = "25">
                                     <h5 class="mb-1 ">{{channel.name}}</h5>
-                                    <small>۱۴۰۲/۴/۳۰</small>
+                                    <small>تاریخ کانال</small>
                                 </div>
                                 <small>
                                     محتوا کانال ...
@@ -53,7 +53,7 @@
                                 <div class="d-flex w-100 justify-content-between">
                                     <img src="../assets/images/channelimg.jpeg" class = "rounded-circle" width = "25" height = "25">
                                     <h5 class="mb-1 ">{{channel.name}}</h5>
-                                    <small>۱۴۰۲/۴/۳۰</small>
+                                    <small>تاریخ کانال</small>
                                 </div>
                                 <small>
                                     محتوا کانال ...
@@ -152,7 +152,7 @@
                             </div>
                             <div class="col"></div>
                         </div>
-                        <div v-else class="col-8">
+                        <div v-else-if="!contentSearchMode && !contentLoading" class="col-8">
                             <div v-for="item in contents" :key="item.contentId">
                                 <div class="card mt-3">
                                     <div class="card-body">
@@ -327,7 +327,6 @@ export default {
             this.$router.push({name: 'user'})
         },
         goToAddContent(){
-            console.log(this.channels[this.channelIndex].id)
             this.$router.push({name: 'addcontent', query:{edit: false, id: this.channels[this.channelIndex].id, name: this.channels[this.channelIndex].name}})
         },
         goToEditContent(){
@@ -414,6 +413,9 @@ export default {
 .sidebar{
     background-color: white;
 }
+.channel-list{
+    overflow-y: scroll;
+}
 .content{
     background-color: rgb(226, 226, 226);
 }
@@ -447,7 +449,7 @@ export default {
     color: black;
 }
 .top-content{
-    height: 5%;
+    height: 3.5%;
     background-color: white;
 }
 .center-content{
