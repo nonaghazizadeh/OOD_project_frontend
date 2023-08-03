@@ -12,7 +12,7 @@
                           <font-awesome-icon icon="fa-solid fa-envelope"/>
                         </b-input-group-text>
                       </template>
-                      <b-form-input placeholder="ایمیل" v-model="phoneEmail"></b-form-input>
+                      <b-form-input placeholder="ایمیل" v-model="email"></b-form-input>
                     </b-input-group>
                     <b-input-group class="mt-3">
                       <template #prepend>
@@ -79,7 +79,6 @@ export default {
 				}
 				Vue.axios.post(api, data)
 				.then(response => {
-					console.log(response)
           localStorage.removeItem('token');
           localStorage.setItem('token', response.data.message)
 					this.loading = false;
@@ -97,11 +96,11 @@ export default {
 				}
 				Vue.axios.post(api, data)
 				.then(response => {
-					console.log(response)
+          localStorage.removeItem('token');
+          localStorage.setItem('token', response.data.message)
 					this.loading = false;
 					this.$router.push('/channel')
 				}).catch((e) => {
-					console.log(e)
 					this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
 					this.loading = false;
 				})
