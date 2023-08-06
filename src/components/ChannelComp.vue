@@ -352,7 +352,6 @@ export default {
             }
             })
             .then(response => {
-                console.log(response)
                 this.channels = response.data.message;
                 for (let i = 0; i < this.channels.length; i++) {
                     this.channels[i].isJoin = true

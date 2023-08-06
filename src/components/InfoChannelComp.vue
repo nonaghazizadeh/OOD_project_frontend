@@ -396,7 +396,6 @@ export default {
             }
             })
             .then(response => {
-                console.log(response.data.messsage)
                 if (response.data.messsage == "MEMBER"){
                     this.isUser = true
                     this.isAdmin = false
@@ -532,7 +531,6 @@ export default {
                         text: response.data.message[i].period
                     })
                 }
-                console.log(response);
                 this.getUsers()
 
             })

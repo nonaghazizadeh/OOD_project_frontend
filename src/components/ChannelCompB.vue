@@ -311,7 +311,6 @@ export default {
             }
             })
             .then(response => {
-                console.log(response)
                 this.contents = response.data.message;
                 let roleApi = "http://79.127.54.112:5000/Channel/GetRole/" + id
                 Vue.axios.get(roleApi, {
@@ -320,7 +319,6 @@ export default {
                 }
                 })
                 .then(response => {
-                    console.log(response.data.messsage)
                     if (response.data.messsage == "MEMBER"){
                         this.isUser = true
                     }
@@ -403,7 +401,6 @@ export default {
             }
             })
             .then(response => {
-                console.log(response)
                 this.channels = response.data.message;
                 for (let i = 0; i < this.channels.length; i++) {
                     this.channels[i].isJoin = true
@@ -415,7 +412,6 @@ export default {
                 }
                 })
                 .then(response => {
-                    console.log(response)
                     this.allChannels = response.data.message;
                     for(let i = 0; i < this.allChannels.length; i++){
                         for(let j = 0; j < this.channels.length; j++){

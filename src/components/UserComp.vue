@@ -158,7 +158,6 @@ export default {
             }
             })
             .then(response => {
-                console.log(response)
                 this.name = response.data.message.name;
                 this.email = response.data.message.email;
                 this.phone = response.data.message.phoneNumber;
@@ -179,7 +178,6 @@ export default {
             }
             })
             .then(response => {
-                console.log(response)
                 this.srcWallet = response.data.message;
                 this.totalLoading = false;
             })

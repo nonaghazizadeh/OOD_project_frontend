@@ -37,7 +37,6 @@ export default {
             data: null
             })
             .then(response => {
-                console.log(response);
                 this.videoSource = response.data
                 // const blob = new Blob([response.data], { type: 'audio/mpeg' });
                 // const url = URL.createObjectURL(blob);
