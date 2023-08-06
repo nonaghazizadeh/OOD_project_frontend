@@ -7,24 +7,25 @@
     ></b-spinner>
 
     <div v-else dir="rtl" class="channel-page container-fluid">
-      <div class="row">
-        <KTSidebar></KTSidebar>
-
-        <div class="col-1 info">
-          <img
-            src="../assets/images/avatar.png"
-            class="rounded-circle avatar"
-            width="40"
-            height="40"
-            @click="goProfile()"
-          />
-          <div class="position-absolute exit-icon-container">
-            <router-link class="exit-link" to="/">
-              <font-awesome-icon
-                icon="fa-solid fa-arrow-right-from-bracket"
-                class="exit-icon"
+      <div class="row page">
+        <div :class="['sidebar2', isOpen ? 'open' : '']">
+          <div class="sidebar-content">
+            <div class="user-info">
+              <img
+                src="../assets/images/avatar.png"
+                class="rounded-circle avatar"
+                width="40"
+                height="40"
+                @click="goProfile()"
               />
-            </router-link>
+              <h2 class="user-name">name</h2>
+            </div>
+            <button @click="toggleSidebar" class="toggle-button">
+              <font-awesome-icon
+                :icon="isOpen ? 'times' : 'arrow-left'"
+                class="toggle-icon"
+              />
+            </button>
           </div>
         </div>
 
@@ -333,6 +334,14 @@
 import Vue from "vue";
 import axios from "axios";
 import VueAxios from "vue-axios";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faTimes,
+  faArrowRight,
+  faArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faTimes, faArrowRight, faArrowLeft);
 Vue.use(VueAxios, axios);
 
 export default {
@@ -370,6 +379,7 @@ export default {
       isJoin: true,
       isNotJoin: false,
       isUser: false,
+      isOpen: true,
       accessToAddContent: false,
       modalShow: false,
       addChannelShow: false,
@@ -393,6 +403,14 @@ export default {
     };
   },
   methods: {
+    toggleSidebar() {
+      this.isOpen = !this.isOpen;
+      if (!this.isOpen) {
+        document.body.style.overflowX = "hidden";
+      } else {
+        document.body.style.overflowX = "hidden";
+      }
+    },
     openModal() {
       this.modalShow = true;
     },
@@ -571,9 +589,81 @@ export default {
 };
 </script>
 
-import KTSidebarFooter from "@/components/sidebar/SidebarFooter.vue";
-
 <style scoped>
+.page {
+  display: flex;
+}
+.main-content {
+  flex-grow: 1;
+}
+
+.sidebar2 {
+  width: 250px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out;
+  overflow: hidden !important;
+  transform: translateX(145px);
+  z-index: 999;
+}
+
+.sidebar-content {
+  position: relative;
+}
+
+.sidebar2.open {
+  transform: translateX(0);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.user-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.user-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.toggle-button {
+  height: 50px;
+  width: 50px;
+  position: absolute;
+  top: 5px;
+  left: 10px; 
+  padding: 10px 0;
+  cursor: pointer;
+  border: none;
+  backdrop-filter: blur(5px);
+  background: #fff;
+  color: black;
+  border: 2px solid black;
+  transition: background 400ms ease-out, color 400ms ease-out,
+    border 400ms ease-out;
+}
+
+.toggle-button:hover {
+  background: #383b3aa0;
+  color: #fff;
+  border: none;
+}
+
+.toggle-icon {
+  font-size: 24px;
+}
+
 .channel-loader {
   position: fixed;
   z-index: 1031;
