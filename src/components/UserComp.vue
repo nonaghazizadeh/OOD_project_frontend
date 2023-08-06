@@ -167,6 +167,7 @@ export default {
             })
             .catch((e) => {
                 console.log(e)
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.totalLoading = false;
             })
         },
@@ -183,6 +184,7 @@ export default {
             })
             .catch((e) => {
                 console.log(e)
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.totalLoading = false;
             })
         },

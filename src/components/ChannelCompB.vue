@@ -330,6 +330,7 @@ export default {
             }) 
             .catch(error => {
                 console.log(error)
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.contentLoading = false
             })
         },
@@ -360,6 +361,7 @@ export default {
             })
             .catch(error => {
                 console.log(error)
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
             })
         },
         goProfile(){
@@ -425,11 +427,13 @@ export default {
                 })
                 .catch((e) => {
                     console.log(e)
+                    this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                     this.channelLoading = false
                 })
             })
             .catch((e) => {
                 console.log(e)
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.channelLoading = false
             })
         },
@@ -447,6 +451,7 @@ export default {
             })
             .catch((e) => {
                 console.log(e)
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.channelLoading = false
             })
 
