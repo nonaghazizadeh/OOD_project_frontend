@@ -11,22 +11,26 @@
         <div :class="['sidebar2', isOpen ? 'open' : '']">
           <div class="sidebar-content">
             <div class="user-info">
-              <img
-                src="../assets/images/avatar.png"
-                class="rounded-circle avatar"
-                width="40"
-                height="40"
-                @click="goProfile()"
-              />
-              <h2 class="user-name">name</h2>
+              <div class="user-image-container">
+                <img
+                  src="../assets/images/avatar.png"
+                  class="user-image"
+                  width = "40" 
+                  height = "40"
+                  @click="goProfile()"
+                />
+              </div>
+              <div class="user-name-container">
+                <h2 class="user-name">name</h2>
+              </div>
             </div>
-            <button @click="toggleSidebar" class="toggle-button">
-              <font-awesome-icon
-                :icon="isOpen ? 'times' : 'arrow-left'"
-                class="toggle-icon"
-              />
-            </button>
           </div>
+          <button @click="toggleSidebar" class="toggle-button">
+            <font-awesome-icon
+              :icon="isOpen ? 'times' : 'arrow-left'"
+              class="toggle-icon"
+            />
+          </button>
         </div>
 
         <div class="col-2 sidebar no-float">
@@ -94,6 +98,7 @@
             </div>
           </div>
         </div>
+
         <div v-if="activeTag === null" class="col content no-float"></div>
         <div class="col content no-float" v-else-if="contentLoading">
           <b-spinner class="channel-loader" label="Spinning"></b-spinner>
@@ -620,29 +625,35 @@ export default {
 
 .user-info {
   display: flex;
-  align-items: center;
-  margin-bottom: 20px;
+  align-items: flex-end;
+  margin-top: 50px;
 }
 
 .user-image {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 10px;
+  object-fit: cover;
 }
 
+.user-image-container {
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+}
 .user-name {
   font-size: 18px;
   font-weight: bold;
   color: #333;
 }
 
+.user-name-container {
+  margin-right: 20px;
+}
+
 .toggle-button {
   height: 50px;
   width: 50px;
   position: absolute;
-  top: 5px;
-  left: 10px; 
+  top: 10px;
+  left: 10px;
   padding: 10px 0;
   cursor: pointer;
   border: none;
