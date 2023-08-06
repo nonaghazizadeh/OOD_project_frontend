@@ -3,7 +3,12 @@
         <b-spinner class="channel-loader" v-if="channelLoading" label="Spinning"></b-spinner>
 
         <div v-else dir="rtl" class="channel-page container-fluid">
+
             <div class="row">
+
+                
+
+
                 <div class="col-1 info">
                     <img src = "../assets/images/avatar.png" class = "rounded-circle avatar" width = "40" height = "40" @click="goProfile()">
                     <div class="position-absolute exit-icon-container" >
@@ -11,7 +16,12 @@
                             <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="exit-icon" />
                         </router-link>
                     </div> 
-                </div>
+                </div>    
+
+            
+
+
+
                 <div class="col-2 sidebar no-float">
                     <div class="mt-4 sidebar-top">
                         <span>
@@ -363,6 +373,8 @@ export default {
     }
 }
 </script>
+
+import KTSidebar from "@/components/sidebar/Sidebar.vue";
 
 <style scoped>
 .channel-loader{
