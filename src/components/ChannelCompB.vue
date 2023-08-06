@@ -158,7 +158,7 @@
                                                 <font-awesome-icon icon="fa-solid fa-money-check"/>
                                             </a>
                                             </span>
-                                            <span class="card-link-show mt-1">
+                                            <span class="card-link-show mt-1" @click="showContent(item.contentId)">
                                                 <font-awesome-icon icon="fa-solid fa-ellipsis"/>
                                             </span>
                                         </p> 
@@ -280,7 +280,6 @@ export default {
             this.modalShow = false
         },
         ok(){
-            console.log(this.contentId)
             let api = "http://79.127.54.112:5000/Subscription/BuyContent/" + this.contentId
             Vue.axios.post(api, null, {
                 headers: {
@@ -295,6 +294,36 @@ export default {
                 console.log(error)
                 this.modalShow = false
                 this.$bvToast.toast(error.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+            })
+        },
+        showContent(id){
+            let api = "http://79.127.54.112:5000/Content/ShowContent/" + id
+            const headers = {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            Vue.axios.get(api, {
+                headers: headers
+            })
+            .then(response => {
+                if(response.data.message.contentType === 'Text'){
+                    console.log(response.data.message.value)
+                    this.$bvModal.msgBoxOk(response.data.message.value, {
+                        title: 'محتوای متنی',
+                        size: 'lg',
+                        buttonSize: 'sm',
+                        okVariant: 'secondary',
+                        headerClass: 'p-2 border-bottom-0',
+                        footerClass: 'p-2 border-top-0',
+                        centered: true
+                    })
+
+                }
+                else{
+                    window.open("http://79.127.54.112:5000/Contents/"+response.data.message.value, '_blank')
+                }
+            })
+            .catch(error => {
+                console.log(error)
             })
         },
         selectChannel(id, cchannel){
@@ -513,6 +542,8 @@ export default {
 }
 .content{
     background-color: rgb(226, 226, 226);
+    height: 100vh;
+    overflow-y: scroll;
 }
 .row{
     height: 100%;
