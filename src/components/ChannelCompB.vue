@@ -34,30 +34,22 @@
                     <div v-if="channelSearchMode" class="list-group mt-3 w-100 channel-list">
                         <div v-for="channel in searchedChannelList" :key="channel.id">
                             <a class="list-group-item list-group-item-action flex-column align-items-start" 
-                            :class="{active: activeTag === channel.id }" @click="selectChannel(channel.id)">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <img rc="../assets/images/channelimg.jpeg" class = "rounded-circle" width = "25" height = "25">
-                                    <h5 class="mb-1 ">{{channel.name}}</h5>
-                                    <small>تاریخ کانال</small>
+                            :class="{active: activeTag === channel.id }" @click="selectChannel(channel.id, channel)">
+                                <div class="d-flex w-100 channel-list-name">
+                                    <img src="../assets/images/channelimg.jpeg" class = "rounded-circle" width = "25" height = "25">
+                                    <h5 class="mb-1 channel-list-name">{{channel.name}}</h5>
                                 </div>
-                                <small>
-                                    محتوا کانال ...
-                                </small>
                             </a>
                         </div>
                     </div>
                     <div v-else class="list-group mt-3 w-100 channel-list">
                         <div v-for="channel in channels" :key="channel.id" >
                             <a v-if="channel.isJoin" class="list-group-item list-group-item-action flex-column align-items-start" 
-                            :class="{active: activeTag === channel.id }" @click="selectChannel(channel.id)">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <img src="../assets/images/channelimg.jpeg" class = "rounded-circle" width = "25" height = "25">
-                                    <h5 class="mb-1 ">{{channel.name}}</h5>
-                                    <small>تاریخ کانال</small>
+                            :class="{active: activeTag === channel.id }" @click="selectChannel(channel.id, channel)">
+                                <div class="d-flex w-100 channel-list-name">
+                                    <img src="../assets/images/channelimg.jpeg" class = "rounded-circle ml-3" width = "25" height = "25">
+                                    <h5 class="mb-1 channel-list-name ">{{channel.name}}</h5>
                                 </div>
-                                <small>
-                                    محتوا کانال ...
-                                </small>
                             </a>
                         </div>
                     </div>
@@ -72,32 +64,32 @@
                             <img src="../assets/images/channelimg.jpeg" class = "rounded-circle channel-image" width = "35" height = "35">
                         </div>
                         <div class="col-2 text-right">
-                            <h5 class="channel-info">{{ channels[channelIndex].name }}</h5>        
+                            <h5 class="channel-info">{{ currentChannel.name }}</h5>        
                         </div>
                         <div class="col">
                         </div>
-                        <div v-show="!channels[channelIndex].isJoin && isUser" class="col-1">
-                            <font-awesome-icon icon="fa-solid fa-user-plus" class="channel-info-icon"/>
+                        <div v-show="!currentChannel.isJoin" class="col-1">
+                            <font-awesome-icon icon="fa-solid fa-user-plus" class="channel-info-icon" @click="joinChannel(currentChannel.joinLink)"/>
                         </div>
-                        <div v-show="channels[channelIndex].isJoin && isUser" class="col-1">
-                            <font-awesome-icon icon="fa-solid fa-user-minus" class="channel-info-icon" @click="removeFromChannel(channels[channelIndex].id)"/>
-                        </div>
-                        <div v-show="!isUser" class="col-1">
+                        <div v-show="currentChannel.isJoin && isUser" class="col-1">
+                            <font-awesome-icon icon="fa-solid fa-user-minus" class="channel-info-icon"/>
+                        </div>               
+                        <div v-show="!isUser && currentChannel.isJoin" class="col-1">
                             <font-awesome-icon icon="fa-solid fa-file-circle-plus" class="channel-info-icon" @click="goToAddContent()"/>
                         </div>
                         <div class="col-1">
-                            <router-link :to="{name: 'infochannel', query: {id : channelIndex}}" class="info-channel-router">
+                            <router-link :to="{name: 'infochannel', query: {id : currentChannel.id}}" class="info-channel-router">
                                 <font-awesome-icon icon="fa-solid fa-circle-info" class="channel-info-icon"/>
                             </router-link>
                         </div>
                     </div>
-                    <b-input-group class="mt-3">
+                    <b-input-group class="mt-3" disabled>
                         <template #append>
                         <b-input-group-text>
                             <font-awesome-icon icon="fa-solid fa-magnifying-glass" @click="searchInContents()" />
                         </b-input-group-text>
                         </template>
-                        <b-form-input v-model="searchContentTitle"></b-form-input>
+                        <b-form-input v-model="searchContentTitle" disabled></b-form-input>
                     </b-input-group>
                     <div :class="[isUser ? 'row center-content-user':'row center-content']">
                         <div class="col-8">
@@ -114,7 +106,7 @@
                                             <span class="edit-icon" v-show="!isUser">
                                                 <font-awesome-icon icon="fa-solid fa-pen-to-square" @click="goToEditContent()"/>
                                             </span>
-                                            <span class="trash-icon" v-show="!isUser" @click="removeContent(item.id)">
+                                            <span class="trash-icon" v-show="!isUser" @click="removeContent(item.contentId)">
                                                 <font-awesome-icon icon="fa-solid fa-trash"/>
                                             </span>
                                         </div>
@@ -122,9 +114,9 @@
                                             <a :href="`http://79.127.54.112:5000/${item.fileName}`" target="_blank">
                                             {{ item.fileName }}
                                             </a>
-                                        <span v-show="isUser" class="card-link-span">
+                                        <!-- <span v-show="isUser" class="card-link-span">
                                             <a class="card-link" href="" @click.prevent="openModal" :class="{'fa-disabled': isNotJoin}">ادامه مطلب ...</a>
-                                        </span>
+                                        </span> -->
                                         </p> 
                                         <p v-else class="card-text">
                                             <a :href="`http://79.127.54.112:5000/${item.fileName}`" target="_blank">
@@ -163,7 +155,7 @@
                                             <span class="edit-icon" v-show="!isUser">
                                                 <font-awesome-icon icon="fa-solid fa-pen-to-square" @click="goToEditContent()"/>
                                             </span>
-                                            <span class="trash-icon" v-show="!isUser" @click="removeContent(item.id)">
+                                            <span class="trash-icon" v-show="!isUser" @click="removeContent(item.contentId)">
                                                 <font-awesome-icon icon="fa-solid fa-trash"/>
                                             </span>
                                         </div>
@@ -171,9 +163,9 @@
                                             <a :href="`http://79.127.54.112:5000/${item.fileName}`" target="_blank">
                                             {{ item.fileName }}
                                             </a>
-                                        <span v-show="isUser" class="card-link-span">
+                                        <!-- <span v-show="isUser" class="card-link-span">
                                             <a class="card-link" href="" @click.prevent="openModal" :class="{'fa-disabled': isNotJoin}">ادامه مطلب ...</a>
-                                        </span>
+                                        </span> -->
                                         </p> 
                                         <p v-else class="card-text">
                                             <a :href="`http://79.127.54.112:5000/${item.fileName}`" target="_blank">
@@ -256,7 +248,7 @@ export default {
         }
     },
     created(){
-        this.getUsersChannel()
+        this.getChannels()
     },
 
     data(){
@@ -266,6 +258,7 @@ export default {
             isJoin: true,
             isNotJoin: false,
             isUser: false,
+            accessToAddContent: false,
             modalShow: false,
             addChannelShow: false,
             activeTag: null,
@@ -277,7 +270,14 @@ export default {
             channelSearchMode: false,
             contentSearchMode: false,
             channels: [],
+            allChannels: [],
             contents: [],
+            currentChannel: {
+                id: null,
+                name: null,
+                isJoin: null,
+                joinLink: null,
+            },
         }
     },
     methods: {
@@ -287,12 +287,14 @@ export default {
         cancel() {
             this.modalShow = false
         },
-        selectChannel(id){
+        selectChannel(id, cchannel){
             this.contentLoading = true
             this.activeTag = id
-            this.channelIndex = id
-            console.log(this.channelIndex)
-            let api = 'http://79.127.54.112:5000/Content/GetAll/' + id
+            this.currentChannel.id = id
+            this.currentChannel.name = cchannel.name
+            this.currentChannel.joinLink = cchannel.joinLink
+            this.currentChannel.isJoin = cchannel.isJoin
+            let api = 'http://79.127.54.112:5000/Content/GetContentsMetaData/' + id
             Vue.axios.get(api, {
             headers: {
                 'X-Auth-Token': localStorage.getItem('token')
@@ -301,8 +303,29 @@ export default {
             .then(response => {
                 console.log(response)
                 this.contents = response.data.message;
-                this.contentLoading = false
+                let roleApi = "http://79.127.54.112:5000/Channel/GetRole/" + id
+                Vue.axios.get(roleApi, {
+                    headers: {
+                    'X-Auth-Token': localStorage.getItem('token')
+                }
+                })
+                .then(response => {
+                    console.log(response.data.messsage)
+                    if (response.data.messsage == "MEMBER"){
+                        this.isUser = true
+                    }
+                    else{
+                        this.isUser = false
+
+                    }
+                    console.log(this.isUser)
+                    this.contentLoading = false
+                })
             }) 
+            .catch(error => {
+                console.log(error)
+                this.contentLoading = false
+            })
         },
         removeFromChannel(channelId){
             this.isJoin = false
@@ -316,12 +339,22 @@ export default {
             this.activeTag = null 
         },
         removeContent(dataId){
-            for (let i = 0; i < this.channels[this.channelIndex].data.length; i++) {
-                if (this.channels[this.channelIndex].data[i].id === dataId) {
-                    this.channels[this.channelIndex].data.splice(i, 1)
-                    break
-                }
+            this.contentLoading = true
+            let api = "http://79.127.54.112:5000/Content/RemoveContent/" + dataId
+            Vue.axios.delete(api, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
             }
+            })
+            .then(response => {
+                console.log(response)
+                setTimeout(() => {
+                    window.location.reload()
+                }, 2000);
+            })
+            .catch(error => {
+                console.log(error)
+            })
         },
         goProfile(){
             this.$router.push({name: 'user'})
@@ -333,9 +366,10 @@ export default {
             this.$router.push({name: 'addcontent', query:{edit: true}})
         },
         searchInChannels(){
-            for (let i = 0; i < this.channels.length; i++) {
-                if (this.channels[i].name === this.searchedChannelName) {
-                    this.searchedChannelList.push(this.channels[i])   
+            for (let i = 0; i < this.allChannels.length; i++) {
+
+                if (this.allChannels[i].name === this.searchedChannelName) {
+                    this.searchedChannelList.push(this.allChannels[i])   
                 }
             }
             this.channelSearchMode = true;
@@ -350,9 +384,9 @@ export default {
             }
             this.contentSearchMode = true;
         },
-        getUsersChannel(){
+        getChannels(){
             this.channelLoading = true
-            let api = "http://79.127.54.112:5000/Channel/getAll";
+            let api = "http://79.127.54.112:5000/Channel/GetJoinedChannels";
             Vue.axios.get(api, {
             headers: {
                 'X-Auth-Token': localStorage.getItem('token')
@@ -363,9 +397,56 @@ export default {
                 this.channels = response.data.message;
                 for (let i = 0; i < this.channels.length; i++) {
                     this.channels[i].isJoin = true
-            }
-                this.channelLoading = false;
-            }) 
+                }
+                let allChannlesApi = "http://79.127.54.112:5000/Channel/AllChannels";
+                Vue.axios.get(allChannlesApi, {
+                headers: {
+                    'X-Auth-Token': localStorage.getItem('token')
+                }
+                })
+                .then(response => {
+                    console.log(response)
+                    this.allChannels = response.data.message;
+                    for(let i = 0; i < this.allChannels.length; i++){
+                        for(let j = 0; j < this.channels.length; j++){
+                            if(this.allChannels[i].id === this.channels[j].id){
+                                this.allChannels[i].isJoin = true
+                            }
+                            else{
+                                this.allChannels[i].isJoin = false
+                            }
+                        }
+                    }
+                    this.channelLoading = false;
+                })
+                .catch((e) => {
+                    console.log(e)
+                    this.channelLoading = false
+                })
+            })
+            .catch((e) => {
+                console.log(e)
+                this.channelLoading = false
+            })
+        },
+        joinChannel(joinLink){
+            console.log(joinLink)
+            let api = "http://79.127.54.112:5000/Channel/Join/" + joinLink
+            this.channelLoading = true
+            Vue.axios.post(api, null, {
+                headers: {
+                    'X-Auth-Token': localStorage.getItem('token')
+                }
+            })
+            .then(response => {
+                console.log(response)
+                window.location.reload()
+            })
+            .catch((e) => {
+                console.log(e)
+                this.channelLoading = false
+            })
+
         }
     }
 }
@@ -409,11 +490,15 @@ export default {
 }
 .info{
     background-color: rgb(226, 226, 226);
+    height: 100vh;
 }
 .sidebar{
+    height: 100vh;
+    overflow-y: scroll;
     background-color: white;
 }
 .channel-list{
+    height: 100vh;
     overflow-y: scroll;
 }
 .content{
@@ -449,7 +534,7 @@ export default {
     color: black;
 }
 .top-content{
-    height: 3.5%;
+    height: 80px;
     background-color: white;
 }
 .center-content{
@@ -470,6 +555,9 @@ export default {
 }
 .channel-info-icon {
     margin-top: 25px;
+}
+.channel-info-icon:hover{
+    cursor: pointer;
 }
 .card-link{
     font-size: 13px;
@@ -520,5 +608,8 @@ export default {
 }
 .trash-icon{
     margin-right: 5px;
+}
+.channel-list-name{
+    text-align: right !important;
 }
 </style>

@@ -7,6 +7,7 @@ import AddChannel from '../views/AddChannel.vue'
 import InfoChannel from '../views/InfoChannel.vue'
 import AddContent from '../views/AddContent.vue'
 import User from '../views/User.vue'
+import test from '../views/test.vue'
 
 Vue.use(VueRouter)
 
@@ -46,6 +47,11 @@ const routes = [
     path: '/user',
     name: 'user',
     component: User
+  },
+  {
+    path: '/test',
+    name: 'test',
+    component: test
   }
 ]
 

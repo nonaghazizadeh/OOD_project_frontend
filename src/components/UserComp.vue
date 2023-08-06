@@ -1,6 +1,8 @@
 <template>
     <div>
-        <div dir="rtl" class="channel-page container-fluid">
+        <b-spinner class="channel-loader" v-if="totalLoading" label="Spinning"></b-spinner>
+
+        <div v-else dir="rtl" class="channel-page container-fluid">
             <div class="row">
                 <div class="col-1 info">
                     <img src = "../assets/images/avatar.png" class = "rounded-circle avatar" width = "40" height = "40">
@@ -23,54 +25,71 @@
                     </div>
 
                     <div class="delete-user-button mt-5">
-                        <b-button v-show="editMode" variant="secondary" @click="deleteUser()">
+                        <b-button variant="secondary" @click="deleteUser()">
                             حذف حساب کاربری     
                         </b-button>
                     </div>
                     <div class="row center-add-content">
                         <div class="col">
-                            <div class="row center-add-content px-5 py-3 mt-2">
+                            <div class="row center-add-content px-5 py-1 mt-2">
                                 <div class="col-6">
-                                    <b-form-input type="text" placeholder="نام و نام خانوادگی"></b-form-input>
+                                    <b-form-input type="text" placeholder="نام و نام خانوادگی" v-model="name"></b-form-input>
                                 </div>
                                 <div class="col-6">
                                     <b-form-file
                                         class=""
-                                        v-model="file1"
+                                        v-model="pic"
                                         placeholder="" 
                                     ></b-form-file>
                                 </div>
                             </div>
-                            <div class="row center-2-add-content px-5 py-2">
+                            <div class="row center-add-content px-5 py-1">
+                                <div class="col-6">
+                                    <b-form-input type="email" placeholder="ایمیل" v-model="email"></b-form-input>
+                                </div>
+                                <div class="col-6">
+                                    <b-form-input type="number" placeholder="تلفن‌همراه" v-model="phone"></b-form-input>
+                                </div>
+                            </div>
+                            <div class="row center-add-content px-5 py-1">
+                                <div class="col-6">
+                                    <b-form-input type="number" placeholder="شماره کارت" v-model="nationalId"></b-form-input>
+                                </div>
+                            </div>
+                            <div class="row center-2-add-content px-5 py-1">
                                 <div class="col-12">
                                     <b-form-textarea
                                         id="textarea-rows"
                                         placeholder="بیوگرافی خود را وارد کنید"
                                         rows="4"
+                                        v-model="bio"
                                     ></b-form-textarea>  
                                 </div>
                             </div>
                             <div class="row cetner-3-add-content px-5">
                                 <div class="col-4">
                                     <b-input-group append="تومان">
-                                        <b-form-input placeholder=" موجودی کیف پول: ۲۰۰۰۰" disabled>
+                                        <b-form-input :placeholder="srcWallet" disabled>
                                         </b-form-input>
                                     </b-input-group>
                                 </div>
                                 <div class="col-2">
-                                    <b-button variant="secondary">
-                                        <b-spinner v-if="loading" label="Spinning"></b-spinner>
+                                        <b-form-input type="number" placeholder="مبلغ شارژ" v-model="chargeMoney"></b-form-input>
+                                </div>
+                                <div class="col-2">
+                                    <b-button variant="secondary" @click="chargeWallet()">
+                                        <b-spinner v-if="walletLoading" label="Spinning"></b-spinner>
                                         <span v-else>
                                             شارژ کیف پول   
                                         </span>   
                                     </b-button>
                                 </div>
-                                <div class="col-3">
+                                <div class="col-2">
                                         <b-form-input type="number" placeholder="مبلغ برداشتی" v-model="walletMoney"></b-form-input>
                                     </div>
                                 <div class="col-2">
                                     <b-button variant="secondary" @click="withDraw()">
-                                        <b-spinner v-if="loading" label="Spinning"></b-spinner>
+                                        <b-spinner v-if="walletLoading" label="Spinning"></b-spinner>
                                         <span v-else>
                                             برداشت کیف پول   
                                         </span>
@@ -81,8 +100,8 @@
                                 <div class="col-10">
                                 </div>
                                 <div class="col-2">
-                                    <b-button v-show="editMode" variant="secondary" @click="updateUser()">
-                                        <b-spinner v-if="loading" label="Spinning"></b-spinner>
+                                    <b-button variant="secondary" @click="updateUser()">
+                                        <b-spinner v-if="walletLoading || userLoading" label="Spinning"></b-spinner>
                                         <span v-else>
                                             ذخیره   
                                         </span>  
@@ -103,37 +122,167 @@ import axios from "axios";
 import VueAxios from "vue-axios";
 Vue.use(VueAxios, axios);
 export default {
+    created(){
+        this.createdMethods();
+    },
     data(){
         return {
-            loading: false,
-            editMode: true,
+            totalLoading: false,
+            walletLoading: false,
+            userLoading: false,
             isJoin: true,
             isUser: false,
             modalShow: false,
             addChannelShow: false,
             walletMoney: '',
-            categoryOptions: [
-            { value: 1, text: 'خبر' },
-            { value: 2, text: 'ورزش' },
-            { value: 3, text: 'اقتصاد' },
-            ]
+            chargeMoney: '',
+            name: '',
+            pic: '',
+            email: '',
+            phone: '',
+            nationalId: '',
+            bio: '',
+            srcWallet: '',
         }
     },
     methods: {
+        createdMethods(){
+            this.getUser()
+        },
+        getUser(){
+            this.totalLoading = true;
+            let api = "http://79.127.54.112:5000/Profile/GetProfile"
+            Vue.axios.get(api, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                console.log(response)
+                this.name = response.data.message.name;
+                this.email = response.data.message.email;
+                this.phone = response.data.message.phoneNumber;
+                this.nationalId = response.data.message.cardNumber;
+                this.bio = response.data.message.biography;
+                this.getWallet()
+            })
+            .catch((e) => {
+                console.log(e)
+                this.totalLoading = false;
+            })
+        },
+        getWallet(){
+            let walletApi = "http://79.127.54.112:5000/Wallet/GetWallet"
+            Vue.axios.get(walletApi, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                console.log(response)
+                this.srcWallet = response.data.message;
+                this.totalLoading = false;
+            })
+            .catch((e) => {
+                console.log(e)
+                this.totalLoading = false;
+            })
+        },
+        chargeWallet(){
+            this.totalLoading = true;
+            let api= "http://79.127.54.112:5000/Wallet/ChargeWallet"
+            const data = {
+                Amount: this.chargeMoney
+            }
+            Vue.axios.put(api, data,{
+                headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                console.log(response)
+                window.location.reload()
+            })
+            .catch((e) => {
+                console.log(e)
+                this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                this.walletMoney = ''
+                this.totalLoading = false;
+            })
+
+        },
+
         deleteUser(){
+            let api = "http://79.127.54.112:5000/User/Logout/";
+            const data = null;
+            Vue.axios.delete(api, data,{
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+			.then(response => {
+                console.log(response)
+                this.$router.push('/')
+                this.walletLoading = false;
+            }).catch((e) => {
+                console.log(e)
+                this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                this.walletMoney = ''
+                this.walletLoading = false;
+            })
+
             this.$router.push('/')
         },
         updateUser(){
+            let api = "http://79.127.54.112:5000/Profile/AddProfile"
+            this.userLoading = true;
+            const data = {
+                Name: this.name,
+                Email: this.email,
+                PhoneNumber: this.phone,
+                CardNumber: this.nationalId,
+                Biography: this.bio,
+            }
+			Vue.axios.post(api, data,{
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+			.then(response => {
+                console.log(response)
+                let image_api = "http://79.127.54.112:5000/Profile/AddProfilePic"
+                let formData = new FormData();
+                formData.append('file', this.pic);
+                Vue.axios.post(image_api, formData,{
+                    headers: {
+                        'X-Auth-Token': localStorage.getItem('token')
+                    }
+                }).then((response) => {
+                    console.log(response)
+                    this.userLoading = false;
+                    this.$router.push('/channel')
+                }).catch((e) => {
+                    console.log(e)
+                    this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                    this.userLoading = false;
+                })
+            }).catch((e) => {
+                console.log(e)
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                this.loading = false;
+            })
+
             this.$router.push('/channel')
         },
         exit(){
-            
             this.$router.push('/')
         },
         withDraw(){
-            this.loading = true;
-            let api = "http://79.127.54.112:5000/Wallet/Withdraw/"+ this.walletMoney;
-            const data = null;
+            this.walletLoading = true;
+            let api = "http://79.127.54.112:5000/Wallet/Withdraw";
+            const data = {
+                Amount: this.walletMoney
+            };
             Vue.axios.put(api, data,{
             headers: {
                 'X-Auth-Token': localStorage.getItem('token')
@@ -141,23 +290,27 @@ export default {
             })
 			.then(response => {
                 console.log(response)
-                this.$bvToast.toast(response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
-                this.walletMoney = ''
-                this.loading = false;
+                window.location.reload()
+                
             }).catch((e) => {
                 console.log(e)
                 this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.walletMoney = ''
-                this.loading = false;
+                this.walletLoading = false;
             })
-
-        }
+        },
     }
 
 }
 </script>
 
 <style scoped>
+.channel-loader{
+  position: fixed;
+  z-index: 1031;
+  top: 50%;
+  left: 50%;
+}
 .input-content-file{
     margin-right: 50px !important;
 }
@@ -257,7 +410,7 @@ export default {
     font-size: 25px;
 }
 .delete-user-button{
-    margin-left: 70px;
+    margin-left: 50px;
     text-align: left;
 }
 </style>

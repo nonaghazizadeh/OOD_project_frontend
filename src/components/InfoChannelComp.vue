@@ -1,6 +1,7 @@
 <template>
     <div>
-        <div dir="rtl" class="channel-page container-fluid">
+        <b-spinner class="channel-loader" v-if="loading" label="Spinning"></b-spinner>
+        <div v-else dir="rtl" class="channel-page container-fluid">
             <div class="row">
                 <div class="col-1 info">
                     <img src = "../assets/images/avatar.png" class = "rounded-circle avatar" width = "40" height = "40" @click="goProfile()">
@@ -10,7 +11,7 @@
                         </router-link>
                     </div> 
                 </div>
-                <div v-show="!isUser" class="col content no-float">
+                <div v-if="!isUser" class="col content no-float">
                     <div class="row top-content">
                         <div class="col-1">
                             <img src="../assets/images/channelimg.jpeg" class = "rounded-circle channel-image" width = "35" height = "35">
@@ -21,9 +22,6 @@
                         <div class="col">
                         </div>
                         <div class="col-1">
-                            <font-awesome-icon icon="fa-solid fa-trash" class="channel-info-icon" @click="removeChannel()"/>
-                        </div>
-                        <div class="col-1">
                             <router-link to="/channel" class="close-icon">
                                 <font-awesome-icon icon="fa-solid fa-close" class="channel-info-icon close-icon" />
                             </router-link>
@@ -31,40 +29,32 @@
                     </div>
                     <div class="tabs my-5 py-5 ">
                         <b-tabs content-class="mt-5">
-                            <b-tab title="ویرایش اطلاعات کانال" active :disabled="!isAdmin">
+                            <b-tab title="تصویر کانال" active>
                                 <div class="row">
                                     <div class="col"></div>
-                                    <div class="col-3  py-3">
-                                        <b-form-input type="text" placeholder="نام کانال"></b-form-input>
-                                    </div>
-                                    <div class="col-3 py-3">
+                                    <div class="col-3">
                                         <b-form-file
-                                        v-model="file1"
+                                        v-model="channelImage"
                                         placeholder=""
                                         ></b-form-file>
                                     </div>
-            
-                                    <div class="col"></div>
-                                </div>
-                                <div class="row master-center-content">
-                                    <div class="col-3"></div>
-                                    <div class="col">
-                                        <b-textarea
-                                        placeholder="توضیحات کانال"
-                                        rows="3"
-                                        max-rows="6"
-                                        ></b-textarea>
+                                    <div class="col-2">
+                                        <b-button variant="secondary" @click="addImage()">
+                                            آپلود تصویر
+                                        </b-button>
                                     </div>
-                                    <div class="col-3"></div>
-                                </div>
-                                <div class="row">
-                                    <b-button variant="secondary" class="add-channel-button" @click="addChannel()">
-                                        ویرایش کانال
-                                    </b-button>
+                                    <div class="col-2">
+                                        <b-button variant="secondary">
+                                            <a class="image-link" :href="`http://79.127.54.112:5000/Channels/${this.channelId}.png`" target="_blank">
+                                                تصویر کانال
+                                            </a>
+                                        </b-button>
+                                    </div>
+                                    <div class="col"></div>
                                 </div>
                             </b-tab>
                             <b-tab title="حق اشتراک">
-                                <div class="row">
+                                <!-- <div class="row">
                                     <div class="col"></div>
                                     <div class="col-4 px-5 py-3">
                                     محتوا‌های کانال به صورت رایگان در اختیار مخاطبین قرار بگیرد؟
@@ -89,11 +79,11 @@
                                         </b-form-checkbox>
                                     </div>
                                     <div class="col"></div>
-                                </div>
+                                </div> -->
                                 <div class="row master-center-content">
                                     <div class="col-1"></div>
                                     <div class="col">
-                                        <b-table :fields="fields" :items="items" sticky-header="200px">
+                                        <b-table :fields="fields" :items="subItems" sticky-header="200px">
                                         </b-table>
                                     </div>
                                     <div class="col-1"></div>
@@ -103,20 +93,21 @@
                                     <div class="col"></div>
                                     <div class="col-3">
                                         <b-form-select 
-                                        v-model="feeSelected"
+                                        v-model="addSubSelected"
                                         :disabled="yesStatus || !isAdmin"
-                                        :options="options">
+                                        :options="subAddOptions">
                                         </b-form-select>
                                     </div>
                                     <div class="col-2">
                                         <b-form-input 
                                             type="number" 
+                                            v-model="subFee"
                                             placeholder="هزینه اشتراک"
                                             :disabled="yesStatus || !isAdmin"
                                         ></b-form-input>
                                     </div>
                                     <div class="col-1">
-                                        <b-button pill :disabled="yesStatus || !isAdmin">تغییر</b-button>
+                                        <b-button pill :disabled="yesStatus || !isAdmin" @click="addSubscription()">افزودن</b-button>
                                     </div>
                                     <div class="col"></div>
                                 </div>
@@ -136,22 +127,21 @@
                                     <div class="col"></div>
                                     <div class="col-5">
                                         <b-form-select 
-                                        v-model="userSelected"
-                                    
+                                        v-model="delUserSelected"
                                         :options="userOptions">
                                         </b-form-select>
                                     </div>
                                     <div class="col-1">
-                                        <b-button pill>حذف</b-button>
+                                        <b-button pill @click="removeMember()">حذف</b-button>
                                     </div>
                                     <div class="col"></div>
                                 </div>
                             </b-tab>
-                            <b-tab title="افزودن مدیر">
+                            <b-tab title="مدیر">
                                 <div class="row master-center-content">
                                     <div class="col-1"></div>
                                     <div class="col">
-                                        <b-table :fields="userFields" :items="userItems" sticky-header="200px">
+                                        <b-table :fields="userFields" :items="adminItems" sticky-header="200px">
                                     </b-table>
                                     </div>
                                     <div class="col-1"></div>
@@ -160,22 +150,83 @@
                                     <div class="col"></div>
                                     <div class="col-3">
                                         <b-form-select 
-                                        v-model="userSelected" 
+                                        v-model="addAdmindSelected" 
                                         :disabled="!isAdmin"
                                         :options="userOptions"></b-form-select>
+                                    </div>
+                                <div class="col-2"></div>
+                                <div class="col-2">
+                                    <b-button pill :disabled="!isAdmin" @click="addAdmin()">افزودن مدیر</b-button>
+                                </div>
+                                <div class="col"></div>
+                                </div>
+                                <div class="row master-center-3-content mt-3">
+                                    <div class="col"></div>
+                                    <div class="col-3">
+                                        <b-form-select 
+                                        v-model="delAdmindSelected" 
+                                        :disabled="!isAdmin"
+                                        :options="adminOptions"></b-form-select>
+                                    </div>
+                                <div class="col-2"></div>
+                                <div class="col-2">
+                                    <b-button pill :disabled="!isAdmin" @click="removeAdmin()">حذف مدیر</b-button>
+                                </div>
+                                <div class="col"></div>
+                                </div>
+                                <div class="row px-5 py-3">
+                                    <div class="col-5">
+                                        <b-form-input type="text" placeholder="نام مدیر"></b-form-input>
+                                    </div>
+                                    <div class="col-5">
+                                        <b-form-input type="number" placeholder="درصد سود"></b-form-input>
+                                    </div>
+                                    <div class="col-2">
+                                        <b-button variant="secondary"  class="add-manager-first-button" @click="addManagerField()">
+                                            <font-awesome-icon icon="fa-solid fa-plus"/>
+                                        </b-button>
+                                    </div>
+                                </div>
+                                <div v-if="managers.length !== 1" >
+                                    <div v-for="manager in managers.slice(1)" :key="manager.id" class="row px-5 py-3">
+                                    <div class="col-5">
+                                        <b-form-input type="text" placeholder="نام مدیر" v-model="manager.name"></b-form-input>
+                                    </div>
+                                    <div class="col-5">
+                                        <b-form-input type="number" placeholder="درصد سود" v-model="manager.profit" ></b-form-input>
+                                    </div>
+                                    <div class="col-2">
+                                        <b-button variant="danger" class="remove-manager-button" @click="removeManagerField(manager.id)">
+                                            <font-awesome-icon icon="fa-solid fa-minus"/>
+                                        </b-button>
+                                        <b-button variant="secondary" @click="addManagerField()">
+                                            <font-awesome-icon icon="fa-solid fa-plus"/>
+                                        </b-button>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="row master-center-3-content mt-3">
+                                    <div class="col"></div>
+                                    <div class="col-3">
+                                        <b-form-select 
+                                        v-model="profitAdminSelected" 
+                                        :disabled="!isAdmin"
+                                        :options="adminOptions"></b-form-select>
                                     </div>
                                     <div class="col-2">
                                         <b-form-input 
                                         :disabled="!isAdmin"
-                                        type="number" placeholder="درصد سود"></b-form-input>
+                                        type="number" 
+                                        v-model="incomeAdmin"
+                                        placeholder="درصد سود"></b-form-input>
                                     </div>
-                                <div class="col-1">
-                                    <b-button pill :disabled="!isAdmin">افزودن</b-button>
+                                <div class="col-2">
+                                    <b-button pill :disabled="!isAdmin" @click="setIncome()">تعیین درصد درآمد</b-button>
                                 </div>
                                 <div class="col"></div>
                                 </div>
                             </b-tab>
-                            <b-tab title="افزودن دسته‌بندی">
+                            <b-tab title="افزودن دسته‌بندی" disabled>
                                 <div class="row master-center-content">
                                     <div class="col-1"></div>
                                     <div class="col">
@@ -196,7 +247,7 @@
                                     <div class="col"></div>
                                 </div>
                             </b-tab>
-                            <b-tab title="حذف دسته‌بندی">
+                            <b-tab title="حذف دسته‌بندی" disabled>
                                 <div class="row master-center-content">
                                     <div class="col-1"></div>
                                     <div class="col">
@@ -221,7 +272,7 @@
                                     <div class="col"></div>
                                 </div>
                             </b-tab>
-                            <b-tab title="ویرایش دسته‌بندی">
+                            <b-tab title="ویرایش دسته‌بندی" disabled>
                                 <div class="row master-center-content">
                                     <div class="col-1"></div>
                                     <div class="col">
@@ -258,7 +309,7 @@
 
 
                 </div>
-                <div v-show="isUser" class="col content no-float">
+                <div v-else-if="isUser" class="col content no-float">
                     <div class="row top-content">
                         <div class="col-1">
                             <img src = "../assets/images/ISNA.jpeg" class = "rounded-circle channel-image" width = "35" height = "35">
@@ -276,24 +327,20 @@
                     </div>
                     <div class="row center-content mt-5">
                         <div class="col-6">
-                            <div class="mb-3">
-                                از اشتراک شما ۲۰ روز باقی مانده است. برای خرید اشتراک تعرفه‌ها به صورت زیر می‌باشد.
-                            </div>
-                            <b-table :fields="fields" :items="items" caption-top>
+                            <b-table :fields="fields" :items="subItems" caption-top>
                             </b-table>
                         </div>
                         <div class="col-6">
-                            <div class="top-category-table"></div>
+                            <div class=""></div>
                             <b-table :fields="categoryFields" :items="categoryItems">
                             </b-table>
                         </div>
                     </div>
                     <div class="row bottom-content mt-5">
-
                         <div class="col-5">
-                            <b-form-select v-model="feeSelected" :options="options"></b-form-select>
+                            <b-form-select v-model="subBuySelected" :options="subBuyOptions"></b-form-select>
                         </div>
-                        <div class="col-1"><b-button pill>خرید</b-button></div>
+                        <div class="col-1"><b-button pill @click="buySubscription()">خرید</b-button></div>
                         <div class="col"></div>
                     </div>
                 </div>
@@ -303,7 +350,15 @@
 </template>
 
 <script>
+import Vue from "vue";
+import axios from "axios";
+import VueAxios from "vue-axios";
+Vue.use(VueAxios, axios);
+
 export default {
+    created(){
+        this.getRole();
+    },
     watch: {
         yesStatus: function (val) {
             if (val) {
@@ -319,51 +374,51 @@ export default {
     data(){
         return {
             isUser: false,
+            isAdmin: true,
             addChannelShow: false,
-            feeSelected: null,
-            userSelected: null,
+            addSubSelected: null,
+            delUserSelected: null,
+            addAdmindSelected: null,
+            delAdmindSelected: null,
+            profitAdminSelected: null,
+            incomeAdmin: '',
+            subDelSelected: null,
+            subBuySelected: null,
             categorySelected: null,
             yesStatus: false,
-            noStatus:false,
-            isAdmin:false,
+            noStatus:true,
+            subFee: '',
+            channelImage: '',
             channelId: this.$route.query.id,
             fields: [
-            { key: 'time', label: 'مدت زمان' },
+            { key: 'period', label: 'مدت زمان' },
             { key: 'price', label: 'قیمت' },
             ],
-            items: [
-            { time: 'یک ماه', price: 'ده هزار تومان' },
-            { time: 'سه ماه', price: 'بیست هزار تومان' },
-            { time: 'شش ماه', price: 'پنجاه هزار تومان' },
-            { time: 'دوازده ماه', price: 'صد و ده هزار تومان' },
-            ] ,
+            subItems: [] ,
             userFields: [
-            { key: 'user', label: 'نام کاربر' },
-            { key: 'state', label: 'نوع کاربر' },
-            { key: 'profit', label: 'درصد درآمد/تعداد روزهای باقی از اشتراک' },
+            { key: 'name', label: 'نام کاربر' },
             ],
-            userItems: [
-            { user: 'نونا', state: 'عادی' ,profit: '.' },
-            { user: 'علی', state: 'دارای حق اشتراک' ,profit: '۲۵'},
-            { user: 'علیرضا', state: 'مدیر' ,profit: '۵۰'},
-            { user: 'محمد', state: 'دارای حق اشتراک' ,profit: '۲۱'},
-            { user: 'فاطمه', state: 'عادی',profit: '.' },
-            ] ,
+            userItems: [] ,
+            adminItems:[],
             categoryFields: [
             { key: 'name', label: 'نام دسته‌بندی' },
             { key: 'count', label: 'تعداد محتوا' },
             ],
-            categoryItems: [
-            { name: 'خبر', count: '۲۳'},
-            { name: 'ورزش', count: '۱۰'},
-            { name: 'اقتصاد', count: '۱۳'},
-            ] ,
-            options: [
+            categoryItems: [] ,
+            subAddOptions: [
             { value: null, text: 'انتخاب نوع حق عضویت' },
-            { value: 1, text: 'یک ماه' },
-            { value: 3, text: 'سه ماه' },
-            { value: 6, text: 'شش ماه' },
-            { value: 12, text: 'دوازده ماه' },
+            { value: 0, text: 'سه ماه' },
+            { value: 1, text: 'شش ماه' },
+            { value: 2, text: 'دوازده ماه' },
+            ],
+            subDelOptions: [
+            { value: null, text: 'انتخاب نوع حق عضویت' },
+            { value: 0, text: 'سه ماه' },
+            { value: 1, text: 'شش ماه' },
+            { value: 2, text: 'دوازده ماه' },  
+            ],
+            subBuyOptions: [
+            { value: null, text: 'انتخاب نوع حق عضویت' },  
             ],
             percentageOptions:[
             { value: 1, text: '۱۰' },
@@ -372,29 +427,324 @@ export default {
             ],
             userOptions: [
             { value: null, text: 'نام کاربر' },
-            { value: 1, text: 'نونا' },
-            { value: 2, text: 'علی' },
-            { value: 3, text: 'علیرضا' },
-            { value: 4, text: 'محمد' },
-            { value: 5, text: 'فاطمه' },
+            ],
+            adminOptions: [
+            { value: null, text: 'نام مدیر' },
             ],
             categoryOptions: [
             { value: null, text: 'نام دسته‌بندی' },
             { value: 1, text: 'خبر' },
             { value: 2, text: 'ورزش' },
             { value: 3, text: 'اقتصاد' },
-            ]
+            ],
+            loading: false,
         }
-
     },
     methods: {
+        getRole(){
+            this.loading = true
+            let roleApi = "http://79.127.54.112:5000/Channel/GetRole/" + this.$route.query.id
+            Vue.axios.get(roleApi, {
+                headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                console.log(response.data.messsage)
+                if (response.data.messsage == "MEMBER"){
+                    this.isUser = true
+                    this.isAdmin = false
+                    this.getUserSubscriptions()
+                }
+                else{
+                    this.isUser = false
+                    this.isAdmin = true
+                    this.getSubscriptions()
+                }
+                console.log(this.isUser)
+
+            })
+
+        },
         removeChannel(){
             this.$router.push('/channel');
         },
         goProfile(){
             this.$router.push({name: 'user'})
+        },
+        getUsers(){
+            let api = "http://79.127.54.112:5000/Channel/GetChannelMembers/" + this.$route.query.id
+            Vue.axios.get(api, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                this.userItems = response.data.message;
+                for (let i=0; i < response.data.message.length; i++){
+                    this.userOptions.push({
+                        value: response.data.message[i].userId,
+                        text: response.data.message[i].name
+                    })
+                }
+                this.getAdmins();
+            })
+            .catch((e) => {
+                console.log(e);
+                this.loading = false;
+            })
+        },
+        getAdmins(){
+            let api = "http://79.127.54.112:5000/Channel/ShowAdmins/" + this.$route.query.id
+            Vue.axios.get(api, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                this.adminItems = response.data.messsage;
+                for (let i=0; i < response.data.messsage.length; i++){
+                    this.adminOptions.push({
+                        value: response.data.messsage[i].userId,
+                        text: response.data.messsage[i].name
+                    })
+                }
+                this.loading = false;
+            })
+            .catch((e) => {
+                console.log(e);
+                this.loading = false;
+            })
+        
+        },
+        getUserSubscriptions(){
+            this.loading = true;
+            let api = "http://79.127.54.112:5000/Subscription/" + this.$route.query.id
+            Vue.axios.get(api, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                this.subItems = response.data.message;
+                for (let i = 0; i< response.data.message.length; i++){
+                    if(response.data.message[i].period == 0){
+                        this.subItems[i].period = 'سه ماه'
+                    }
+                    else if(response.data.message[i].period == 1){
+                        this.subItems[i].period = 'شش ماه'
+                    }
+                    else if(response.data.message[i].period == 2){
+                        this.subItems[i].period = 'دوازده ماه'
+                    }
+                }
+                for(let i = 0; i < response.data.message.length; i++){
+                    this.subBuyOptions.push({
+                        value: response.data.message[i].id,
+                        text: response.data.message[i].period
+                    })
+                }
+                this.loading = false;
+            })
+            .catch((e) => {
+                console.log(e);
+                this.loading = false;
+            })
+        },
+
+        getSubscriptions(){
+            this.loading = true;
+            let api = "http://79.127.54.112:5000/Subscription/" + this.$route.query.id
+            Vue.axios.get(api, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                this.subItems = response.data.message;
+                for (let i = 0; i< response.data.message.length; i++){
+                    if(response.data.message[i].period == 0){
+                        this.subItems[i].period = 'سه ماه'
+                    }
+                    else if(response.data.message[i].period == 1){
+                        this.subItems[i].period = 'شش ماه'
+                    }
+                    else if(response.data.message[i].period == 2){
+                        this.subItems[i].period = 'دوازده ماه'
+                    }
+                }
+                for(let i = 0; i < response.data.message.length; i++){
+                    this.subBuyOptions.push({
+                        value: response.data.message[i].id,
+                        text: response.data.message[i].period
+                    })
+                }
+                console.log(response);
+                this.getUsers()
+
+            })
+            .catch((e) => {
+                console.log(e);
+                this.loading = false;
+            })
+        },
+        addSubscription(){
+            this.loading = true;
+            let api = "http://79.127.54.112:5000/Subscription/AddSubscription"
+            const data = {
+                "ChannelId": this.$route.query.id,
+                "Period": this.addSubSelected,
+                "Price": this.subFee
+            }
+            Vue.axios.post(api, data , {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then((response) => {
+                window.location.reload();
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error);
+                this.loading = false;
+            })
+
+        },
+        setIncome(){
+            this.loading = true
+            let api = "http://79.127.54.112:5000/Channel/SetIncomeShare"
+            let incomeDict = {}
+            incomeDict[this.profitAdminSelected] = this.incomeAdmin
+            const data = {
+                "ChannelId": this.$route.query.id,
+                "IncomeShares": incomeDict
+            }
+            Vue.axios.post(api, data , {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then((response) => {
+                console.log(response);
+                window.location.reload()
+            })
+            .catch((error) => {
+                console.log(error);
+                this.loading = false;
+            })
+
+        },
+        addAdmin(){
+            this.loading = true;
+            let api = "http://79.127.54.112:5000/Channel/AddAdmin"
+            const data = {
+                "ChannelId": this.$route.query.id,
+                "MemberIds": [this.addAdmindSelected]
+            }
+            Vue.axios.post(api, data , {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then((response) => {
+                console.log(response);
+                window.location.reload()
+            })
+            .catch((error) => {
+                console.log(error);
+                this.loading = false;
+            })
+
+        },
+        removeMember(){
+            this.loading = true;
+            let api = "http://79.127.54.112:5000/Channel/Member"
+            console.log(localStorage.getItem('token'))
+            const data = {
+                "ChannelId": this.$route.query.id,
+                "MemberIds": [this.delUserSelected]
+            }
+            Vue.axios.delete(api, data , {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then((response) => {
+                console.log(response);
+                window.location.reload()
+            })
+            .catch((error) => {
+                console.log(error);
+                this.loading = false;
+            })
+        },
+        removeAdmin(){
+            this.loading = true;
+            let api = "http://79.127.54.112:5000/Channel/Admin"
+            const data = {
+                "ChannelId": this.$route.query.id,
+                "AdminIds": [this.delAdminSelected]
+            }
+            Vue.axios.delete(api, data , {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then((response) => {
+                console.log(response);
+                let channelid  = this.$router.query.id
+                this.$router.push({name: 'info-channel', query:{id: channelid}})
+                this.loading = false;
+            })
+            .catch((error) => {
+                console.log(error);
+                this.loading = false;
+            })
+        },
+        buySubscription(){
+            this.loading = true;
+            let api = "http://79.127.54.112:5000/Subscription/BuySubscription" + this.subBuySelected
+            Vue.axios.post(api, null , {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then((response) => {
+                console.log(response);
+                let channelid  = this.$router.query.id
+                this.$router.push({name: 'info-channel', query:{id: channelid}})
+                this.loading = false;
+            })
+            .catch((error) => {
+                console.log(error);
+                this.loading = false;
+            })
+        },
+        addImage(){
+        this.loading = true;
+        let api = "http://79.127.54.112:5000/Channel/AddPicture/"+this.channelId
+        let formData = new FormData();
+        formData.append('file', this.channelImage);
+        Vue.axios.post(api, formData , {
+        headers: {
+            'X-Auth-Token': localStorage.getItem('token')
         }
+        })
+        .then((response) => {
+            console.log(response);
+            let channelid  = this.$router.query.id
+            this.channelImage = ''
+            this.$router.push({name: 'info-channel', query:{id: channelid}})
+            this.loading = false;
+        })
+        .catch((error) => {
+            console.log(error);
+            this.loading = false;
+        })
+    }
     },
+
 
 
 }
@@ -407,6 +757,19 @@ export default {
 </style>
 
 <style scoped>
+
+
+.channel-loader{
+  position: fixed;
+  z-index: 1031;
+  top: 50%;
+  left: 50%;
+}
+
+.image-link, image-link:hover, image-link:visited, image-link:active{
+    color: white !important;
+    text-decoration: none !important;
+}
 .close-icon{
     color: black !important;
 }

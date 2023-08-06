@@ -73,23 +73,9 @@ export default {
             noStatus: false,
             file1: null,
             channelName: '',
-            managers:[
-                {
-                    id: 1,
-                    name: "",
-                    profit: ""
-                }
-            ]
         }
     },
     methods:{
-        addManagerField(){
-            this.managers.push({
-                id: this.managers.length + 1,
-                name: "",
-                profit: ""
-            })
-        },
         removeManagerField(managerId){
             for (let i = 0; i < this.managers.length; i++) {
                 if (this.managers[i].id === managerId) {
@@ -99,8 +85,10 @@ export default {
             
         },
         addChannel(){
-            let api = "http://79.127.54.112:5000/Channel/"+ this.channelName;
-            const data = null;
+            let api = "http://79.127.54.112:5000/Channel/Add";
+            const data = {
+                ChannelName: this.channelName,
+            };
             this.loading = true;
             Vue.axios.post(api, data,{
             headers: {

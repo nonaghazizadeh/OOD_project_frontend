@@ -48,7 +48,6 @@
                                     id="checkbox-1"
                                     button-variant="secondary"
                                     v-model="yesStatus"
-                                    disabled
                                     class="mx-3"
                                     >
                                         بله
@@ -58,14 +57,13 @@
                                     <b-form-checkbox
                                         id="checkbox-2"
                                         v-model="noStatus"
-                                        disabled
                                         class="mx-3"
                                     >
                                     خیر
                                     </b-form-checkbox>
                                 </div>
                                 <div class="col-6">
-                                    <b-form-input type="number" placeholder="هزینه محتوا" :disabled="yesStatus">
+                                    <b-form-input type="number" placeholder="هزینه محتوا" :disabled="yesStatus" v-model="contentPrice">
                                     </b-form-input>
                                 </div>
                             </div>
@@ -77,27 +75,34 @@
                                     <b-form-checkbox
                                     id="checkbox-3"
                                     v-model="isText"
-                                    disabled
                                     class="mx-3"
                                     >
                                         متن
                                     </b-form-checkbox>
                                 </div>
-                                <div class="col-3 py-3">
+                                <div class="col-1 py-3">
                                     <b-form-checkbox
                                         id="checkbox-4"
-                                        v-model="isMedia"
-                                        disabled
+                                        v-model="isMusic"
                                         class="mx-3 success"
                                     >
-                                        ویدیو، عکس، فایل صوتی
+                                        موزیک
+                                    </b-form-checkbox>
+                                </div>
+                                <div class="col-2 py-3">
+                                    <b-form-checkbox
+                                    id="checkbox-5"
+                                    v-model="isVideo"
+                                    class="mx-3"
+                                    >
+                                        ویدیو و عکس
                                     </b-form-checkbox>
                                 </div>
                                 <div class="col-6">
                                     <b-form-file
                                         class="input-content-file"
                                         v-model="file"
-                                        :disabled="editMode || !isMedia"
+                                        :disabled="!media"
                                         placeholder="" 
                                         @change="handleFileUpload( $event )"
                                     ></b-form-file>
@@ -146,7 +151,6 @@ Vue.use(VueAxios, axios);
 
 export default {
     created(){
-
         console.log(this.$router.query.edit)
     },
     watch: {
@@ -162,21 +166,35 @@ export default {
         },
         isText: function (val) {
             if (val) {
-                this.isMedia = false
+                this.isMusic = false
+                this.isVideo = false
             }
         },
-        isMedia: function (val) {
+        isMusic: function (val) {
             if (val) {
                 this.isText = false
+                this.isVideo = false
+                this.media = true
             }
-        }
+        },
+        isVideo: function (val) {
+            if (val) {
+                this.isText = false
+                this.isMusic = false
+                this.media = true
+            }
+        },
+
     },
     data(){
         return {
             yesStatus: true,
             noStatus: false,
             isText: false,
-            isMedia: true,
+            isMusic: false,
+            isVideo: false,
+            media: false,
+            contentPrice: '',
             editMode: (this.$route.query.edit === "true"),
             channelId: this.$route.query.id,
             contentTitle: '',
@@ -205,35 +223,75 @@ export default {
         },
         addContent(){
             this.loading = true;
-            let api= "http://79.127.54.112:5000/Content/Add/" + this.channelId
-            let formData = new FormData();
-            formData.append('file', this.file);
-            formData.append('Title', this.contentTitle);
-            if (this.isText === true){
-                formData.append('Type', 'Text')
-            }
-            else{
-                formData.append('Type', 'Music')
-            }
-            formData.append('Description', this.contentDescription);
-            console.log(formData)
-            Vue.axios.post(api, formData,{
-            headers: {
-                'X-Auth-Token': localStorage.getItem('token')
-            }
-            })
-			.then(response => {
-                console.log(response)
-                setTimeout(() => {
-                    this.loading = false;
-                    this.$router.push('/channel')
-                }, 2000);
+            let api= "http://79.127.54.112:5000/Content/Add"
+            if (this.media){
+                let formData = new FormData();
+                formData.append('file', this.file);
+                formData.append('Title', this.contentTitle);
+                formData.append('ChannelId', this.channelId);
+                formData.append('Description', this.contentDescription);
+                if (this.isMusic){
+                    formData.append('Type', 1)
+                }
+                else if (this.isVideo){
+                    formData.append('Type', 2)
+                }
+                if (this.yesStatus){
+                    this.contentPrice = 0
+                }
+                formData.append('IsPremium', this.noStatus)
+                formData.append('Price', this.contentPrice)
 
-            }).catch((e) => {
-                console.log(e)
-                this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
-                this.loading = false;
-            })
+                Vue.axios.post(api, formData,{
+                headers: {
+                    'X-Auth-Token': localStorage.getItem('token')
+                }
+                })
+                .then(response => {
+                    console.log(response)
+                    setTimeout(() => {
+                        this.loading = false;
+                        this.$router.push('/channel')
+                    }, 2000);
+
+                }).catch((e) => {
+                    console.log(e)
+                    this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                    this.loading = false;
+                })
+
+            }
+            else if (this.isText){
+                if (this.yesStatus){
+                    this.contentPrice = 0
+                }
+                let formData = new FormData();
+                formData.append('Value', this.contentText);
+                formData.append('Title', this.contentTitle);
+                formData.append('ChannelId', this.channelId);
+                formData.append('Description', this.contentDescription);
+                formData.append('IsPremium', this.noStatus)
+                formData.append('Price', this.contentPrice)
+                formData.append('Type', 0)
+                Vue.axios.post(api, formData,{
+                headers: {
+                    'X-Auth-Token': localStorage.getItem('token')
+                }
+                })
+                .then(response => {
+                    console.log(response)
+                    setTimeout(() => {
+                        this.loading = false;
+                        this.$router.push('/channel')
+                    }, 2000);
+
+                }).catch((e) => {
+                    console.log(e)
+                    this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                    this.loading = false;
+                })
+            }
+        
         },
         editContent(){
             this.$router.push('/channel')
