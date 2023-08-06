@@ -110,17 +110,9 @@
                                                 <font-awesome-icon icon="fa-solid fa-trash"/>
                                             </span>
                                         </div>
-                                        <p v-if="isUser" class="card-text">
+                                        <p class="card-text">
                                             <a :href="`http://79.127.54.112:5000/${item.fileName}`" target="_blank">
-                                            {{ item.fileName }}
-                                            </a>
-                                        <!-- <span v-show="isUser" class="card-link-span">
-                                            <a class="card-link" href="" @click.prevent="openModal" :class="{'fa-disabled': isNotJoin}">ادامه مطلب ...</a>
-                                        </span> -->
-                                        </p> 
-                                        <p v-else class="card-text">
-                                            <a :href="`http://79.127.54.112:5000/${item.fileName}`" target="_blank">
-                                                {{ item.fileName }}
+                                            {{ item.description }}
                                             </a>
                                         </p>
 
@@ -130,13 +122,11 @@
                                         <div>
                                             <font-awesome-icon 
                                             icon="fa-solid fa-thumbs-down" 
-                                            class="mx-3 dislike-icon"
-                                            :class="{'fa-disabled': isNotJoin}"
+                                            class="mx-3 dislike-icon fa-disabled"
                                             />
                                             <font-awesome-icon 
                                             icon="fa-solid fa-thumbs-up"  
-                                            class="like-icon"
-                                            :class="{'fa-disabled': isNotJoin}"
+                                            class="like-icon fa-disabled"
                                             />
                                         </div>
                                     </div>
@@ -152,26 +142,26 @@
                                             <span class="card-title" >
                                                     {{item.title}}
                                             </span>
-                                            <span class="edit-icon" v-show="!isUser">
-                                                <font-awesome-icon icon="fa-solid fa-pen-to-square" @click="goToEditContent()"/>
+                                            <span class="edit-icon fa-disabled" v-show="!isUser">
+                                                <font-awesome-icon icon="fa-solid fa-pen-to-square"/>
                                             </span>
                                             <span class="trash-icon" v-show="!isUser" @click="removeContent(item.contentId)">
                                                 <font-awesome-icon icon="fa-solid fa-trash"/>
                                             </span>
                                         </div>
-                                        <p v-if="isUser" class="card-text">
-                                            <a :href="`http://79.127.54.112:5000/${item.fileName}`" target="_blank">
-                                            {{ item.fileName }}
+                                        <p class="card-text">
+                                            <span>
+                                            {{ item.description }}
+                                            </span>
+                                            <span  class="card-link-span mr-3">
+                                            <a v-show="item.isPremium" class="card-link" @click.prevent="openModal(item.price, item.contentId)">
+                                                <font-awesome-icon icon="fa-solid fa-money-check"/>
                                             </a>
-                                        <!-- <span v-show="isUser" class="card-link-span">
-                                            <a class="card-link" href="" @click.prevent="openModal" :class="{'fa-disabled': isNotJoin}">ادامه مطلب ...</a>
-                                        </span> -->
+                                            </span>
+                                            <span class="card-link-show mt-1">
+                                                <font-awesome-icon icon="fa-solid fa-ellipsis"/>
+                                            </span>
                                         </p> 
-                                        <p v-else class="card-text">
-                                            <a :href="`http://79.127.54.112:5000/${item.fileName}`" target="_blank">
-                                                {{ item.fileName }}
-                                            </a>
-                                        </p>
 
                                         <span class="card-link-span">
                                             <a class="card-link">{{ new Date(item.createdAt).toLocaleDateString() }}</a>
@@ -179,13 +169,11 @@
                                         <div>
                                             <font-awesome-icon 
                                             icon="fa-solid fa-thumbs-down" 
-                                            class="mx-3 dislike-icon"
-                                            :class="{'fa-disabled': isNotJoin}"
+                                            class="mx-3 dislike-icon fa-disabled"
                                             />
                                             <font-awesome-icon 
                                             icon="fa-solid fa-thumbs-up"  
-                                            class="like-icon"
-                                            :class="{'fa-disabled': isNotJoin}"
+                                            class="like-icon fa-disabled"
                                             />
                                         </div>
                                     </div>
@@ -201,11 +189,11 @@
             <template #default>
                 <p class="modal-text">
                      برای مشاهده کامل محتوا می‌توانید هزینه آن را پرداخت کنید و یا با رفتن به بخش اطلاعات کانال حق‌عضویت خریداری کنید. آیا می‌خواهید این محتوا را بخرید؟ 
-                     (هزینه محتوا ۱۰۰۰ تومان است)
+                     (هزینه محتوا {{contentPrice}} تومان است)
                 </p>
             </template>
 
-            <template #modal-footer="{ ok, cancel}">
+            <template #modal-footer="{cancel}">
                 <b-button pill size="sm" variant="outline-secondary" @click="ok()">
                     بله، می‌خواهم.          
                 </b-button>
@@ -272,6 +260,8 @@ export default {
             channels: [],
             allChannels: [],
             contents: [],
+            contentPrice: 0,
+            contentId: null,
             currentChannel: {
                 id: null,
                 name: null,
@@ -281,11 +271,31 @@ export default {
         }
     },
     methods: {
-        openModal() {
+        openModal(price, id) {
             this.modalShow = true
+            this.contentPrice = price;
+            this.contentId = id;
         },
         cancel() {
             this.modalShow = false
+        },
+        ok(){
+            console.log(this.contentId)
+            let api = "http://79.127.54.112:5000/Subscription/BuyContent/" + this.contentId
+            Vue.axios.post(api, null, {
+                headers: {
+                    'X-Auth-Token': localStorage.getItem('token')
+                }
+            })
+            .then(response => {
+                console.log(response)
+                window.location.reload()
+            })
+            .catch(error => {
+                console.log(error)
+                this.modalShow = false
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+            })
         },
         selectChannel(id, cchannel){
             this.contentLoading = true
@@ -572,6 +582,13 @@ export default {
 .card-link-span{
     float: left;
 }
+.card-link-show, .card-link-show:hover{
+    float:left;
+    font-size: 10px;
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
 .card{
     border-radius: 20px;
 }
@@ -608,6 +625,7 @@ export default {
 }
 .trash-icon{
     margin-right: 5px;
+    cursor: pointer;
 }
 .channel-list-name{
     text-align: right !important;

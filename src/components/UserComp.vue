@@ -25,7 +25,7 @@
                     </div>
 
                     <div class="delete-user-button mt-5">
-                        <b-button variant="secondary" @click="deleteUser()">
+                        <b-button variant="secondary" @click="deleteUser()" disabled>
                             حذف حساب کاربری     
                         </b-button>
                     </div>
@@ -214,12 +214,11 @@ export default {
 
         deleteUser(){
             let api = "http://79.127.54.112:5000/User/Logout/";
-            const data = null;
-            Vue.axios.delete(api, data,{
-            headers: {
-                'X-Auth-Token': localStorage.getItem('token')
+            const data = null
+            const headers = {
+                'X-Auth-Token': localStorage.getItem('token'),
             }
-            })
+            Vue.axios.delete(api, {headers: headers, data: data })
 			.then(response => {
                 console.log(response)
                 this.$router.push('/')
@@ -275,6 +274,7 @@ export default {
             this.$router.push('/channel')
         },
         exit(){
+            localStorage.removeItem('token')
             this.$router.push('/')
         },
         withDraw(){

@@ -54,32 +54,6 @@
                                 </div>
                             </b-tab>
                             <b-tab title="حق اشتراک">
-                                <!-- <div class="row">
-                                    <div class="col"></div>
-                                    <div class="col-4 px-5 py-3">
-                                    محتوا‌های کانال به صورت رایگان در اختیار مخاطبین قرار بگیرد؟
-                                    </div>
-                                    <div class="col-1 py-3">
-                                        <b-form-checkbox
-                                        id="checkbox-1"
-                                        v-model="yesStatus"
-                                        class="mx-3"
-                                        :disabled="!isAdmin"
-                                        >
-                                            بله
-                                        </b-form-checkbox>
-                                    </div>
-                                    <div class="col-1 py-3">
-                                        <b-form-checkbox
-                                        id="checkbox-2"
-                                        v-model="noStatus"
-                                        class="mx-3"
-                                        :disabled="!isAdmin">
-                                            خیر
-                                        </b-form-checkbox>
-                                    </div>
-                                    <div class="col"></div>
-                                </div> -->
                                 <div class="row master-center-content">
                                     <div class="col-1"></div>
                                     <div class="col">
@@ -174,56 +148,27 @@
                                 </div>
                                 <div class="col"></div>
                                 </div>
-                                <div class="row px-5 py-3">
-                                    <div class="col-5">
-                                        <b-form-input type="text" placeholder="نام مدیر"></b-form-input>
-                                    </div>
-                                    <div class="col-5">
-                                        <b-form-input type="number" placeholder="درصد سود"></b-form-input>
-                                    </div>
-                                    <div class="col-2">
-                                        <b-button variant="secondary"  class="add-manager-first-button" @click="addManagerField()">
-                                            <font-awesome-icon icon="fa-solid fa-plus"/>
-                                        </b-button>
-                                    </div>
-                                </div>
-                                <div v-if="managers.length !== 1" >
-                                    <div v-for="manager in managers.slice(1)" :key="manager.id" class="row px-5 py-3">
-                                    <div class="col-5">
-                                        <b-form-input type="text" placeholder="نام مدیر" v-model="manager.name"></b-form-input>
-                                    </div>
-                                    <div class="col-5">
-                                        <b-form-input type="number" placeholder="درصد سود" v-model="manager.profit" ></b-form-input>
-                                    </div>
-                                    <div class="col-2">
-                                        <b-button variant="danger" class="remove-manager-button" @click="removeManagerField(manager.id)">
-                                            <font-awesome-icon icon="fa-solid fa-minus"/>
-                                        </b-button>
-                                        <b-button variant="secondary" @click="addManagerField()">
-                                            <font-awesome-icon icon="fa-solid fa-plus"/>
-                                        </b-button>
-                                    </div>
+                                <div >
+                                    <div v-for="manager in managersProfit" :key="manager.id" class="row mt-3">
+                                        <div class="col"></div>
+                                        <div class="col-3">
+                                            <b-form-input type="text" placeholder="نام مدیر" disabled v-model="manager.name"></b-form-input>
+                                        </div>
+                                        <div class="col-2">
+                                            <b-form-input type="number" placeholder="درصد سود" v-model="manager.profit" ></b-form-input>
+                                        </div>
+                                        <div class="col-2"></div>
+                                        <div class="col"></div>
                                     </div>
                                 </div>
-                                <div class="row master-center-3-content mt-3">
+                                <div class="row">
                                     <div class="col"></div>
-                                    <div class="col-3">
-                                        <b-form-select 
-                                        v-model="profitAdminSelected" 
-                                        :disabled="!isAdmin"
-                                        :options="adminOptions"></b-form-select>
-                                    </div>
+                                    <div class="col-3"></div>
+                                    <div class="col-2"></div>
                                     <div class="col-2">
-                                        <b-form-input 
-                                        :disabled="!isAdmin"
-                                        type="number" 
-                                        v-model="incomeAdmin"
-                                        placeholder="درصد سود"></b-form-input>
-                                    </div>
-                                <div class="col-2">
                                     <b-button pill :disabled="!isAdmin" @click="setIncome()">تعیین درصد درآمد</b-button>
-                                </div>
-                                <div class="col"></div>
+                                    </div>
+                                    <div class="col"></div>
                                 </div>
                             </b-tab>
                             <b-tab title="افزودن دسته‌بندی" disabled>
@@ -438,6 +383,7 @@ export default {
             { value: 3, text: 'اقتصاد' },
             ],
             loading: false,
+            managersProfit:[],
         }
     },
     methods: {
@@ -508,7 +454,14 @@ export default {
                         value: response.data.messsage[i].userId,
                         text: response.data.messsage[i].name
                     })
+                    this.managersProfit.push({
+                        id: response.data.messsage[i].userId,
+                        name: response.data.messsage[i].name,
+                        profit: ''
+                    })
+
                 }
+            
                 this.loading = false;
             })
             .catch((e) => {
@@ -615,7 +568,10 @@ export default {
             this.loading = true
             let api = "http://79.127.54.112:5000/Channel/SetIncomeShare"
             let incomeDict = {}
-            incomeDict[this.profitAdminSelected] = this.incomeAdmin
+            console.log(this.managersProfit)
+            for(let i=0; i<this.managersProfit.length; i++){
+                incomeDict[this.managersProfit[i].id] = this.managersProfit[i].profit
+            }
             const data = {
                 "ChannelId": this.$route.query.id,
                 "IncomeShares": incomeDict
@@ -660,18 +616,18 @@ export default {
         removeMember(){
             this.loading = true;
             let api = "http://79.127.54.112:5000/Channel/Member"
-            console.log(localStorage.getItem('token'))
             const data = {
                 "ChannelId": this.$route.query.id,
                 "MemberIds": [this.delUserSelected]
             }
-            Vue.axios.delete(api, data , {
-            headers: {
-                'X-Auth-Token': localStorage.getItem('token')
+            console.log(localStorage.getItem('token'))
+            const headers = {
+                'X-Auth-Token': localStorage.getItem('token'),
             }
-            })
-            .then((response) => {
+            Vue.axios.delete(api, {headers: headers, data: data })
+            .then(response => {
                 console.log(response);
+                this.delUserSelected = ''
                 window.location.reload()
             })
             .catch((error) => {
@@ -684,18 +640,15 @@ export default {
             let api = "http://79.127.54.112:5000/Channel/Admin"
             const data = {
                 "ChannelId": this.$route.query.id,
-                "AdminIds": [this.delAdminSelected]
+                "AdminIds": [this.delAdmindSelected]
             }
-            Vue.axios.delete(api, data , {
-            headers: {
-                'X-Auth-Token': localStorage.getItem('token')
+            const headers = {
+                'X-Auth-Token': localStorage.getItem('token'),
             }
-            })
+            Vue.axios.delete(api, {headers: headers, data: data })
             .then((response) => {
                 console.log(response);
-                let channelid  = this.$router.query.id
-                this.$router.push({name: 'info-channel', query:{id: channelid}})
-                this.loading = false;
+                window.location.reload()
             })
             .catch((error) => {
                 console.log(error);
@@ -704,7 +657,7 @@ export default {
         },
         buySubscription(){
             this.loading = true;
-            let api = "http://79.127.54.112:5000/Subscription/BuySubscription" + this.subBuySelected
+            let api = "http://79.127.54.112:5000/Subscription/BuySubscription/" + this.subBuySelected
             Vue.axios.post(api, null , {
             headers: {
                 'X-Auth-Token': localStorage.getItem('token')

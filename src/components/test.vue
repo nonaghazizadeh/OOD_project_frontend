@@ -29,15 +29,20 @@ export default {
   methods: {
     fetchVideo() {
         this.loading = true;
-
-        Vue.axios.get("http://79.127.54.112:5000/Content/ShowContent/2", {
-            headers: {
-                'X-Auth-Token': "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkMDg5MWIyYi03YjlhLTQ3NjAtYjE1YS05OGJjYjA1MmRhMTAiLCJ1aWQiOiIyIiwiZXhwIjoxNjkxMzM0MTI1fQ.UEMRijdVNbcl3MdlX5n8262Ko9e-Hf_8GNk8KENF0gY"
-            }
+        const headers = {
+          'X-Auth-Token': "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzOTQwNzRjMS1kZDgwLTRjOTctOTNhMy1kNTQzNWRiNWE4ZDYiLCJ1aWQiOiIzIiwiZXhwIjoxNjkxMzQ3ODE1fQ.j6ExXo9T3GpWpp0Q4AJ5HKjLKHVJRZGazJFwmOuLUgw",
+        }
+        Vue.axios.get("http://79.127.54.112:5000/Content/ShowContent/2",{
+            headers: headers,
+            data: null
             })
             .then(response => {
-                console.log(response)
-                this.videoSource = response.request.responseURL
+                console.log(response);
+                this.videoSource = response.data
+                // const blob = new Blob([response.data], { type: 'audio/mpeg' });
+                // const url = URL.createObjectURL(blob);
+                // console.log(url);
+                // this.videoSource = response.request.responseURL
                 this.loading= false
             })
             .catch((e) => {

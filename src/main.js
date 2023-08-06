@@ -40,6 +40,8 @@ import { faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import { faFileCirclePlus } from '@fortawesome/free-solid-svg-icons';
 import { faCreditCard } from '@fortawesome/free-solid-svg-icons';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { faMoneyCheck } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsis } from '@fortawesome/free-solid-svg-icons'
 
 Vue.config.productionTip = false
 Vue.use(BootstrapVue);
@@ -69,6 +71,8 @@ library.add(faThumbsDown);
 library.add(faFileCirclePlus);
 library.add(faCreditCard);
 library.add(faPenToSquare);
+library.add(faMoneyCheck);
+library.add(faEllipsis);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
