@@ -294,7 +294,7 @@ export default {
                 
             }).catch((e) => {
                 console.log(e)
-                this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.walletMoney = ''
                 this.walletLoading = false;
             })
