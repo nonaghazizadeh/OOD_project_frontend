@@ -280,7 +280,6 @@ export default {
             this.modalShow = false
         },
         ok(){
-            console.log(this.contentId)
             let api = "http://79.127.54.112:5000/Subscription/BuyContent/" + this.contentId
             Vue.axios.post(api, null, {
                 headers: {
@@ -326,7 +325,6 @@ export default {
                         this.isUser = false
 
                     }
-                    console.log(this.isUser)
                     this.contentLoading = false
                 })
             }) 
@@ -436,7 +434,6 @@ export default {
             })
         },
         joinChannel(joinLink){
-            console.log(joinLink)
             let api = "http://79.127.54.112:5000/Channel/Join/" + joinLink
             this.channelLoading = true
             Vue.axios.post(api, null, {

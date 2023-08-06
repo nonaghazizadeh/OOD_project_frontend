@@ -406,7 +406,6 @@ export default {
                     this.isAdmin = true
                     this.getSubscriptions()
                 }
-                console.log(this.isUser)
 
             })
 
@@ -566,7 +565,6 @@ export default {
             this.loading = true
             let api = "http://79.127.54.112:5000/Channel/SetIncomeShare"
             let incomeDict = {}
-            console.log(this.managersProfit)
             for(let i=0; i<this.managersProfit.length; i++){
                 incomeDict[this.managersProfit[i].id] = this.managersProfit[i].profit
             }
@@ -618,7 +616,6 @@ export default {
                 "ChannelId": this.$route.query.id,
                 "MemberIds": [this.delUserSelected]
             }
-            console.log(localStorage.getItem('token'))
             const headers = {
                 'X-Auth-Token': localStorage.getItem('token'),
             }

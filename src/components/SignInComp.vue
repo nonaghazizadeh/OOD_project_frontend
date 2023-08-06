@@ -84,7 +84,6 @@ export default {
 					this.loading = false;
 					this.$router.push('/channel')
 				}).catch((e) => {
-					console.log(e.response.data.message)
 					this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
 					this.loading = false;
 				})
