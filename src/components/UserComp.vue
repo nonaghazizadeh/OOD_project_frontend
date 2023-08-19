@@ -24,14 +24,31 @@
                         </div>
                     </div>
 
-                    <div class="delete-user-button mt-5">
-                        <b-button variant="secondary" @click="deleteUser()" disabled>
-                            حذف حساب کاربری     
-                        </b-button>
-                    </div>
+                    <div class="row bottom-content mt-3 px-5">
+                        <div class="col-2">
+                                <b-form-input 
+                                type="number" 
+                                placeholder="کد تایید" 
+                                v-model="verifyCode" 
+                                ></b-form-input>
+                        </div>
+                        <div class="col-2">
+                            <b-button variant="secondary" @click="verify()">
+                                <b-spinner v-if="verifyLoading" label="Spinning"></b-spinner>
+                                <span v-else>
+                                    تایید  
+                                </span>   
+                            </b-button>
+                        </div>
+                        <div class="col-2">
+                            <b-button variant="secondary" @click="deleteUser()">
+                                حذف حساب کاربری     
+                            </b-button>
+                        </div>
+                    </div>  
                     <div class="row center-add-content">
                         <div class="col">
-                            <div class="row center-add-content px-5 py-1 mt-2">
+                            <div class="row center-add-content px-5">
                                 <div class="col-6">
                                     <b-form-input type="text" placeholder="نام و نام خانوادگی" v-model="name"></b-form-input>
                                 </div>
@@ -95,7 +112,7 @@
                                         </span>
                                     </b-button>
                                 </div>
-                            </div>
+                            </div>                            
                             <div class="row bottom-content">
                                 <div class="col-10">
                                 </div>
@@ -143,9 +160,36 @@ export default {
             nationalId: '',
             bio: '',
             srcWallet: '',
+            notDeletedYet: true,
+            verifyLoading: false,
+            verifyCode: ''
         }
     },
     methods: {
+        verify(){
+            console.log('hiiii')
+            this.verifyLoading = true;
+
+            let api= "http://79.127.54.112:5000/Profile/VerifyRemoveProfile/" + this.verifyCode
+            const data = null
+            const headers = {
+                'X-Auth-Token': localStorage.getItem('token'),
+            }
+            Vue.axios.delete(api, {headers: headers, data: data })
+            .then(response => {
+                console.log(response)
+                this.verifyLoading = false
+                this.$router.push('/')
+            })
+            .catch((e) => {
+                console.log(e)
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                this.verifyLoading = false;
+            })
+
+        },
+
+
         createdMethods(){
             this.getUser()
         },
@@ -188,6 +232,7 @@ export default {
                 this.totalLoading = false;
             })
         },
+
         chargeWallet(){
             this.totalLoading = true;
             let api= "http://79.127.54.112:5000/Wallet/ChargeWallet"
@@ -213,7 +258,7 @@ export default {
         },
 
         deleteUser(){
-            let api = "http://79.127.54.112:5000/User/Logout/";
+            let api = "http://79.127.54.112:5000/Profile/RemoveProfile";
             const data = null
             const headers = {
                 'X-Auth-Token': localStorage.getItem('token'),
@@ -221,16 +266,13 @@ export default {
             Vue.axios.delete(api, {headers: headers, data: data })
 			.then(response => {
                 console.log(response)
-                this.$router.push('/')
-                this.walletLoading = false;
+                this.notDeletedYet = false
+                this.$bvToast.toast(response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+
             }).catch((e) => {
                 console.log(e)
-                this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
-                this.walletMoney = ''
-                this.walletLoading = false;
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
             })
-
-            this.$router.push('/')
         },
         updateUser(){
             let api = "http://79.127.54.112:5000/Profile/AddProfile"

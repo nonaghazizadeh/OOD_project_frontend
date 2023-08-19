@@ -42,6 +42,8 @@ import { faCreditCard } from '@fortawesome/free-solid-svg-icons';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { faMoneyCheck } from '@fortawesome/free-solid-svg-icons';
 import { faEllipsis } from '@fortawesome/free-solid-svg-icons'
+import { faHeart } from '@fortawesome/free-solid-svg-icons'
+import { faTimeline } from '@fortawesome/free-solid-svg-icons'
 
 Vue.config.productionTip = false
 Vue.use(BootstrapVue);
@@ -73,6 +75,8 @@ library.add(faCreditCard);
 library.add(faPenToSquare);
 library.add(faMoneyCheck);
 library.add(faEllipsis);
+library.add(faHeart);
+library.add(faTimeline);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

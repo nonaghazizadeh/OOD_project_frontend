@@ -53,7 +53,27 @@
                                     <div class="col"></div>
                                 </div>
                             </b-tab>
-                            <b-tab title="حق اشتراک">
+                            <b-tab title="ویرایش اطلاعات کانال">
+                                <div class="row master-center-content">
+                                    <div class="col-1"></div>
+                                    <div class="col-2">
+                                        <b-form-input type="text" placeholder="نام کانال" v-model="chName"></b-form-input>
+                                    </div>
+                                    <div class="col-7">
+                                        <b-form-input type="text" placeholder="توضیحات کانال" v-model="desName"></b-form-input>
+                                    </div>
+                                    <div class="col-2">
+                                        
+                                        <b-button pill @click="editChannel()">
+                                            <b-spinner v-if="updateLoading" label="Spinning"></b-spinner>
+                                            <span v-else>
+                                                تغییر 
+                                            </span>
+                                        </b-button>
+                                    </div>
+                                </div>
+                            </b-tab>
+                            <b-tab title="افزودن حق اشتراک">
                                 <div class="row master-center-content">
                                     <div class="col-1"></div>
                                     <div class="col">
@@ -82,6 +102,37 @@
                                     </div>
                                     <div class="col-1">
                                         <b-button pill :disabled="yesStatus || !isAdmin" @click="addSubscription()">افزودن</b-button>
+                                    </div>
+                                    <div class="col"></div>
+                                </div>
+                            </b-tab>
+                            <b-tab title="ویرایش حق اشتراک">
+                                <div class="row master-center-content">
+                                    <div class="col-1"></div>
+                                    <div class="col">
+                                        <b-table :fields="fields" :items="subItems" sticky-header="200px">
+                                        </b-table>
+                                    </div>
+                                    <div class="col-1"></div>
+                                </div>
+
+                                <div class="row master-center-2-content">
+                                    <div class="col"></div>
+                                    <div class="col-3">
+                                        <b-form-select 
+                                        v-model="subSelectedUpdate"
+                                        :options="subAddOptionsUpdate">
+                                        </b-form-select>
+                                    </div>
+                                    <div class="col-2">
+                                        <b-form-input 
+                                            type="number" 
+                                            v-model="subFeeUpdate"
+                                            placeholder="هزینه اشتراک"
+                                        ></b-form-input>
+                                    </div>
+                                    <div class="col-1">
+                                        <b-button pill :disabled="yesStatus || !isAdmin" @click="editSubscription()">تغییر</b-button>
                                     </div>
                                     <div class="col"></div>
                                 </div>
@@ -330,10 +381,15 @@ export default {
             subDelSelected: null,
             subBuySelected: null,
             categorySelected: null,
+            subSelectedUpdate: null,
             yesStatus: false,
             noStatus:true,
             subFee: '',
             channelImage: '',
+            chName: '',
+            desName: '',
+            subFeeUpdate: '',
+            updateLoading: false,
             channelId: this.$route.query.id,
             fields: [
             { key: 'period', label: 'مدت زمان' },
@@ -350,6 +406,9 @@ export default {
             { key: 'count', label: 'تعداد محتوا' },
             ],
             categoryItems: [] ,
+            subAddOptionsUpdate: [
+                { value: null, text: 'انتخاب نوع حق عضویت' },
+            ],
             subAddOptions: [
             { value: null, text: 'انتخاب نوع حق عضویت' },
             { value: 0, text: 'سه ماه' },
@@ -410,6 +469,27 @@ export default {
                 console.log(this.isUser)
 
             })
+        },
+        editSubscription(){
+            this.loading = true;
+            let api = "http://79.127.54.112:5000/Subscription/Edit"
+            const data = {
+                "SubscriptionId": this.subSelectedUpdate,
+                "Price": this.subFeeUpdate
+            }
+            Vue.axios.put(api, data , {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then((response) => {
+                window.location.reload();
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error);
+                this.loading = false;
+            })
 
         },
         removeChannel(){
@@ -417,6 +497,35 @@ export default {
         },
         goProfile(){
             this.$router.push({name: 'user'})
+        },
+        editChannel(){
+            this.updateLoading = true
+            let api = "http://79.127.54.112:5000/Channel/Edit"
+            const data = {
+                "ChannelId": this.$route.query.id,
+                "ChannelName": this.chName,
+                "Description": this.desName
+            }
+            Vue.axios.put(api, data, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                console.log(response)
+                this.chName = ''
+                this.desName = ''
+                this.updateLoading = false
+                this.$bvToast.toast(response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+
+            })
+            .catch((e) => {
+                console.log(e);
+                this.chName = ''
+                this.desName = ''
+                this.updateLoading = true
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+            })
         },
         getUsers(){
             let api = "http://79.127.54.112:5000/Channel/GetChannelMembers/" + this.$route.query.id
@@ -531,6 +640,10 @@ export default {
                         value: response.data.message[i].id,
                         text: response.data.message[i].period
                     })
+                    this.subAddOptionsUpdate.push({
+                        value: response.data.message[i].id,
+                        text: response.data.message[i].period
+                    })
                 }
                 console.log(response);
                 this.getUsers()
@@ -562,7 +675,6 @@ export default {
                 console.log(error);
                 this.loading = false;
             })
-
         },
         setIncome(){
             this.loading = true

@@ -151,7 +151,7 @@ Vue.use(VueAxios, axios);
 
 export default {
     created(){
-        console.log(this.$router.query.edit)
+        console.log(this.$route.query.edit)
     },
     watch: {
         yesStatus: function (val) {
@@ -195,7 +195,7 @@ export default {
             isVideo: false,
             media: false,
             contentPrice: '',
-            editMode: (this.$route.query.edit === "true"),
+            editMode: (this.$route.query.edit == "true"),
             channelId: this.$route.query.id,
             contentTitle: '',
             contentDescription:'',
