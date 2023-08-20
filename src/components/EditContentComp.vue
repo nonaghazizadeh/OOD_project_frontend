@@ -33,7 +33,7 @@
                                     <b-form-input type="text" placeholder="عنوان محتوا" v-model="contentTitle"></b-form-input>
                                 </div>
                                 <div class="col-6">
-                                    <b-form-select v-if="editMode" v-model="catSelected" :options="categoryOptions"></b-form-select>
+                                    <b-form-select v-model="catSelected" :options="categoryOptions"></b-form-select>
                                 </div>
                             </div>
                             <div class="row center-add-content px-5 py-2">
@@ -124,7 +124,7 @@
                                     <b-form-textarea
                                         id="textarea-rows"
                                         v-model="contentText"
-                                        placeholder="متن خود را وارد کنید"
+                                        placeholder="متن جدید خود را وارد کنید"
                                         rows="5"
                                         :disabled="!isText"
                                     ></b-form-textarea>  
@@ -135,14 +135,11 @@
 
                                 </div>
                                 <div class="col-2">
-                                    <b-button v-show="!editMode" variant="secondary" @click="addContent()">
+                                    <b-button variant="secondary" @click="editContent()">
                                         <b-spinner v-if="loading" label="Spinning"></b-spinner>
                                         <span v-else>
-                                            افزودن 
+                                            تغییر 
                                         </span>
-                                    </b-button>
-                                    <b-button v-show="editMode" variant="secondary" @click="editContent()">
-                                        تغییر     
                                     </b-button>
                                 </div>
                             </div>
@@ -161,6 +158,9 @@ import VueAxios from "vue-axios";
 Vue.use(VueAxios, axios);
 
 export default {
+    created(){
+            this.getData()
+    },
     watch: {
         yesStatus: function (val) {
             if (val) {
@@ -216,7 +216,6 @@ export default {
             isImage: false,
             media: false,
             contentPrice: '',
-            editMode: (this.$route.query.edit == "true"),
             channelId: this.$route.query.id,
             contentTitle: '',
             contentDescription:'',
@@ -237,18 +236,80 @@ export default {
     },
 
     methods: {
+        getData(){
+            this.totalLoading = true
+            let api = "http://79.127.54.112:5000/Content/GetMetaData/" + this.$route.query.contentId ;
+            Vue.axios.get(api, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                console.log(response.data.message)
+                this.contentTitle = response.data.message.content.title
+                this.contentDescription = response.data.message.content.description
+                this.catSelected = response.data.message.categoryId
+                let type = response.data.message.contentType
+                if (type == 0){
+                    this.isText = true
+                }
+                else if (type == 1){
+                    this.isMusic = true
+                }
+                else if (type == 2){
+                    this.isVideo = true
+                }
+                else if (type == 3){
+                    this.isImage = true
+                }
+                this.contentPrice = response.data.message.price
+                if (response.data.message.premium){
+                    this.yesStatus = false
+                    this.noStatus = true
+                }
+                else{
+                    this.yesStatus = true
+                    this.noStatus = false
+                }
+                this.getCategery()
+            })
+
+        },
+        getCategery(){
+            this.totalLoading = true
+            let api = "http://79.127.54.112:5000/Category/GetAll/" + this.channelId ;
+            Vue.axios.get(api, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                console.log(response)
+                for (let i=0; i < response.data.message.length; i++){
+                    this.categoryOptions.push({
+                        value: response.data.message[i].id,
+                        text: response.data.message[i].title
+                    })
+                }
+                this.totalLoading = false;
+            })
+
+        },
         goProfile(){
             this.$router.push({name: 'user'})
         },
-        addContent(){
+        editContent(){
             this.loading = true;
-            let api= "http://79.127.54.112:5000/Content/Add"
+            let api= "http://79.127.54.112:5000/Content/Edit"
             if (this.media){
                 let formData = new FormData();
-                formData.append('file', this.file);
+                if (this.file != ''){
+                    formData.append('file', this.file);
+                }
                 formData.append('Title', this.contentTitle);
-                formData.append('ChannelId', this.channelId);
+                formData.append('ContentId', this.$route.query.contentId);
                 formData.append('Description', this.contentDescription);
+                formData.append('CategoryId', this.catSelected)
                 if (this.isMusic){
                     formData.append('Type', 1)
                 }
@@ -261,10 +322,9 @@ export default {
                 if (this.yesStatus){
                     this.contentPrice = 0
                 }
-                formData.append('IsPremium', this.noStatus)
                 formData.append('Price', this.contentPrice)
 
-                Vue.axios.post(api, formData,{
+                Vue.axios.put(api, formData,{
                 headers: {
                     'X-Auth-Token': localStorage.getItem('token')
                 }
@@ -288,14 +348,16 @@ export default {
                     this.contentPrice = 0
                 }
                 let formData = new FormData();
-                formData.append('Value', this.contentText);
+                if (this.contentText != ''){
+                    formData.append('Value', this.contentText);
+                }
                 formData.append('Title', this.contentTitle);
-                formData.append('ChannelId', this.channelId);
+                formData.append('ContentId', this.$route.query.contentId);
                 formData.append('Description', this.contentDescription);
-                formData.append('IsPremium', this.noStatus)
                 formData.append('Price', this.contentPrice)
+                formData.append('CategoryId', this.catSelected)
                 formData.append('Type', 0)
-                Vue.axios.post(api, formData,{
+                Vue.axios.put(api, formData,{
                 headers: {
                     'X-Auth-Token': localStorage.getItem('token')
                 }
@@ -314,9 +376,6 @@ export default {
                 })
             }
         
-        },
-        editContent(){
-            this.$router.push('/channel')
         },
         close(){
             this.$router.push('/channel')

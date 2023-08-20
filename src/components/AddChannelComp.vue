@@ -8,7 +8,6 @@
                         <router-link class="exit-link" to="/">
                             <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="exit-icon" />
                         </router-link>
-
                     </div> 
                 </div>
                 <div class="col">
@@ -41,7 +40,6 @@
                             </span>
                         </b-button>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -76,14 +74,6 @@ export default {
         }
     },
     methods:{
-        removeManagerField(managerId){
-            for (let i = 0; i < this.managers.length; i++) {
-                if (this.managers[i].id === managerId) {
-                    this.managers.splice(i, 1);
-                }
-            }
-            
-        },
         addChannel(){
             let api = "http://79.127.54.112:5000/Channel/Add";
             const data = {
@@ -106,7 +96,6 @@ export default {
                 this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
-
         }
     }
 }

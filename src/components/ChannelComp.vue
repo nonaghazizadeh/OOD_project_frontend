@@ -1,7 +1,6 @@
 <template>
     <div>
         <b-spinner class="channel-loader" v-if="channelLoading" label="Spinning"></b-spinner>
-
         <div v-else dir="rtl" class="channel-page container-fluid">
             <div class="row">
                 <div class="col-1 info">
@@ -156,9 +155,6 @@
                         </div>
                         <div v-show="!currentChannel.isJoin" class="col-1">
                             <font-awesome-icon icon="fa-solid fa-user-plus" class="channel-info-icon" @click="joinChannel(currentChannel.joinLink)"/>
-                        </div>
-                        <div v-show="currentChannel.isJoin && isUser" class="col-1">
-                            <font-awesome-icon icon="fa-solid fa-user-minus" class="channel-info-icon"/>
                         </div>               
                         <div v-show="!isUser && currentChannel.isJoin" class="col-1">
                             <font-awesome-icon icon="fa-solid fa-file-circle-plus" class="channel-info-icon" @click="goToAddContent()"/>
@@ -201,7 +197,7 @@
                                             {{ item.description }}
                                             </span>
                                             <span  class="card-link-span mr-3">
-                                            <a v-show="item.isPremium" class="card-link" @click.prevent="openModal(item.price, item.contentId)">
+                                            <a v-show="item.isPremium && isUser" lass="card-link" @click.prevent="openModal(item.price, item.contentId)">
                                                 <font-awesome-icon icon="fa-solid fa-money-check"/>
                                             </a>
                                             </span>
@@ -246,7 +242,7 @@
                                             {{ item.description }}
                                             </span>
                                             <span  class="card-link-span mr-3">
-                                            <a v-show="item.isPremium" class="card-link" @click.prevent="openModal(item.price, item.contentId)">
+                                            <a v-show="item.isPremium && isUser" class="card-link" @click.prevent="openModal(item.price, item.contentId)">
                                                 <font-awesome-icon icon="fa-solid fa-money-check"/>
                                             </a>
                                             </span>
@@ -503,7 +499,6 @@ export default {
                     this.searchJoinChannelList.push(this.allChannels[i])   
                 }
             }
-            console.log(this.searchJoinChannelList)
             this.joinMode = true;
         },
         showContent(id){
@@ -524,7 +519,10 @@ export default {
                         okVariant: 'secondary',
                         headerClass: 'p-2 border-bottom-0',
                         footerClass: 'p-2 border-top-0',
-                        centered: true
+                        centered: true,
+                        okTitle: 'بستن',
+                        modalClass: 'my-modal'
+
                     })
                 }
                 else{
@@ -532,6 +530,7 @@ export default {
                 }
             })
             .catch(error => {
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 console.log(error)
             })
         },
@@ -564,16 +563,20 @@ export default {
                     if (response.data.messsage == "MEMBER"){
                         this.isUser = true
                     }
-                    else{
+                    else {
                         this.isUser = false
-
                     }
-                    console.log(this.isUser)
+                    this.contentLoading = false
+                })
+                .catch(error => {
+                    console.log(error)
+                    this.$bvToast.toast(error.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                     this.contentLoading = false
                 })
             }) 
             .catch(error => {
                 console.log(error)
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.contentLoading = false
             })
         },
@@ -603,6 +606,7 @@ export default {
                 }, 2000);
             })
             .catch(error => {
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 console.log(error)
             })
         },
@@ -613,7 +617,7 @@ export default {
             this.$router.push({name: 'addcontent', query:{edit: false, id: this.channels[this.channelIndex].id, name: this.channels[this.channelIndex].name}})
         },
         goToEditContent(id){
-            this.$router.push({name: 'addcontent', query:{edit: true, id: this.channels[this.channelIndex].id, name: this.channels[this.channelIndex].name, contentId: id}})
+            this.$router.push({name: 'editcontent', query:{id: this.channels[this.channelIndex].id, name: this.channels[this.channelIndex].name, contentId: id}})
         },
         searchInChannels(){
             this.channelLoading = true
@@ -668,7 +672,6 @@ export default {
                 }
                 })
                 .then(response => {
-                    console.log(response)
                     this.allChannels = response.data.message;
                     for(let i = 0; i < this.allChannels.length; i++){
                         for(let j = 0; j < this.channels.length; j++){
@@ -684,11 +687,13 @@ export default {
                 })
                 .catch((e) => {
                     console.log(e)
+                    this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                     this.channelLoading = false
                 })
             })
             .catch((e) => {
                 console.log(e)
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.channelLoading = false
             })
         },
@@ -892,6 +897,18 @@ export default {
     cursor: pointer;
 }
 .channel-list-name{
+    text-align: right !important;
+    font-size: 15px;
+}
+
+</style>
+<style>
+.my-modal{
+    direction: rtl !important;
+    left: auto;
+    right: 0;
+}
+.my-modal .modal-body{
     text-align: right !important;
 }
 </style>

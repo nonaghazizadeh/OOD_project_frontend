@@ -222,7 +222,7 @@
                                     <div class="col"></div>
                                 </div>
                             </b-tab>
-                            <b-tab title="افزودن دسته‌بندی" disabled>
+                            <b-tab title="افزودن دسته‌بندی">
                                 <div class="row master-center-content">
                                     <div class="col-1"></div>
                                     <div class="col">
@@ -235,15 +235,15 @@
                                 <div class="row master-center-2-content">
                                     <div class="col"></div>
                                     <div class="col-5">
-                                        <b-form-input type="text" placeholder="نام دسته‌بندی"></b-form-input>
+                                        <b-form-input type="text" placeholder="نام دسته‌بندی" v-model="newCategory"></b-form-input>
                                     </div>
                                     <div class="col-1">
-                                        <b-button pill>افزودن</b-button>
+                                        <b-button pill @click="addCategory()">افزودن</b-button>
                                     </div>
                                     <div class="col"></div>
                                 </div>
                             </b-tab>
-                            <b-tab title="حذف دسته‌بندی" disabled>
+                            <b-tab title="حذف دسته‌بندی">
                                 <div class="row master-center-content">
                                     <div class="col-1"></div>
                                     <div class="col">
@@ -257,18 +257,18 @@
                                     <div class="col"></div>
                                     <div class="col-5">
                                         <b-form-select 
-                                            v-model="categorySelected" 
+                                            v-model="delCategorySelected" 
                                             :options="categoryOptions"
                                             :disabled="!isAdmin"
                                             ></b-form-select>
                                     </div>
                                     <div class="col-1">
-                                        <b-button pill :disabled="!isAdmin">حذف</b-button>
+                                        <b-button pill @click="deleteCategory()" :disabled="!isAdmin">حذف</b-button>
                                     </div>
                                     <div class="col"></div>
                                 </div>
                             </b-tab>
-                            <b-tab title="ویرایش دسته‌بندی" disabled>
+                            <b-tab title="ویرایش دسته‌بندی" >
                                 <div class="row master-center-content">
                                     <div class="col-1"></div>
                                     <div class="col">
@@ -282,7 +282,7 @@
                                     <div class="col"></div>
                                     <div class="col-3">
                                         <b-form-select 
-                                            v-model="categorySelected" 
+                                            v-model="updateCategorySelected" 
                                             :options="categoryOptions"
                                             :disabled="!isAdmin"
                                             ></b-form-select>
@@ -290,12 +290,13 @@
                                     <div class="col-2">
                                         <b-form-input 
                                         type="text" 
+                                        v-model="updateCategeryName"
                                         placeholder="نام تغییر یافته دسته‌بندی"
                                         :disabled="!isAdmin"
                                     ></b-form-input>
                                     </div>
                                     <div class="col-1">
-                                        <b-button pill :disabled="!isAdmin">تغییر</b-button>
+                                        <b-button pill @click="editCategory()" :disabled="!isAdmin">تغییر</b-button>
                                     </div>
                                     <div class="col"></div>
                                 </div>
@@ -380,7 +381,7 @@ export default {
             incomeAdmin: '',
             subDelSelected: null,
             subBuySelected: null,
-            categorySelected: null,
+            updateCategorySelected: null,
             subSelectedUpdate: null,
             yesStatus: false,
             noStatus:true,
@@ -389,6 +390,9 @@ export default {
             chName: '',
             desName: '',
             subFeeUpdate: '',
+            newCategory: '',
+            updateCategeryName: '',
+            delCategorySelected: null,
             updateLoading: false,
             channelId: this.$route.query.id,
             fields: [
@@ -402,8 +406,7 @@ export default {
             userItems: [] ,
             adminItems:[],
             categoryFields: [
-            { key: 'name', label: 'نام دسته‌بندی' },
-            { key: 'count', label: 'تعداد محتوا' },
+            { key: 'title', label: 'نام دسته‌بندی' },
             ],
             categoryItems: [] ,
             subAddOptionsUpdate: [
@@ -437,9 +440,6 @@ export default {
             ],
             categoryOptions: [
             { value: null, text: 'نام دسته‌بندی' },
-            { value: 1, text: 'خبر' },
-            { value: 2, text: 'ورزش' },
-            { value: 3, text: 'اقتصاد' },
             ],
             loading: false,
             managersProfit:[],
@@ -512,7 +512,6 @@ export default {
             }
             })
             .then(response => {
-                console.log(response)
                 this.chName = ''
                 this.desName = ''
                 this.updateLoading = false
@@ -534,18 +533,76 @@ export default {
                 'X-Auth-Token': localStorage.getItem('token')
             }
             })
-            .then(response => {
+            .then((response) => {
                 this.userItems = response.data.message;
+                for(let i = 0; i < response.data.message.length; i++){
+                    if(response.data.message[i].name == null){
+                        this.userItems[i].name = 'بی‌نام'
+                    }
+                }
                 for (let i=0; i < response.data.message.length; i++){
-                    this.userOptions.push({
+                    if (response.data.message[i].name == null){
+                        this.userOptions.push({
+                        value: response.data.message[i].userId,
+                        text: 'بی‌نام'
+                    })
+                    }
+                    else{
+                        this.userOptions.push({
                         value: response.data.message[i].userId,
                         text: response.data.message[i].name
+                    })
+                    }
+
+                }
+                this.getCategory();
+            })
+            .catch((e) => {
+                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                console.log(e);
+                this.loading = false;
+            })
+        },
+        deleteCategory(){
+            this.loading = true;
+            let api = "http://79.127.54.112:5000/Category/Delete/" + this.delCategorySelected ;
+            Vue.axios.delete(api, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                console.log(response)
+                window.location.reload();
+            })
+            .catch((e) => {
+                console.log(e);
+                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.loading = false;
+            })
+
+        },
+        getCategory(){
+            let api = "http://79.127.54.112:5000/Category/GetAll/" + this.channelId ;
+            Vue.axios.get(api, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then((response) => {
+                console.log(response)
+                this.categoryItems = response.data.message
+                for (let i=0; i < response.data.message.length; i++){
+                    this.categoryOptions.push({
+                    value: response.data.message[i].id,
+                    text: response.data.message[i].title
                     })
                 }
                 this.getAdmins();
             })
             .catch((e) => {
                 console.log(e);
+                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
         },
@@ -570,15 +627,63 @@ export default {
                     })
 
                 }
-            
                 this.loading = false;
             })
             .catch((e) => {
                 console.log(e);
+                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
         
         },
+        editCategory(){
+            this.loading = true;
+            let api= "http://79.127.54.112:5000/Category/Update"
+            const data = {
+                Id: this.updateCategorySelected,
+                Title: this.updateCategeryName
+            }
+            Vue.axios.put(api, data,{
+                headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then(response => {
+                console.log(response)
+                window.location.reload()
+            })
+            .catch((e) => {
+                console.log(e)
+                this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                this.loading = false;
+            })
+
+        },
+        getUserCategory(){
+            let api = "http://79.127.54.112:5000/Category/GetAll/" + this.channelId ;
+            Vue.axios.get(api, {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then((response) => {
+                console.log(response)
+                this.categoryItems = response.data.message
+                for (let i=0; i < response.data.message.length; i++){
+                    this.categoryOptions.push({
+                    value: response.data.message[i].id,
+                    text: response.data.message[i].title
+                    })
+                }
+                this.loading = false;
+            })
+            .catch((e) => {
+                console.log(e);
+                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.loading = false;
+            })
+        },
+
         getUserSubscriptions(){
             this.loading = true;
             let api = "http://79.127.54.112:5000/Subscription/" + this.$route.query.id
@@ -606,14 +711,37 @@ export default {
                         text: response.data.message[i].period
                     })
                 }
-                this.loading = false;
+                this.getUserCategory()
             })
             .catch((e) => {
                 console.log(e);
+                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
         },
+        addCategory(){
+            this.loading = true;
+            let api = "http://79.127.54.112:5000/Category/Add"
+            const data = {
+                "ChannelId": this.$route.query.id,
+                "Title": this.newCategory,
+            }
+            Vue.axios.post(api, data , {
+            headers: {
+                'X-Auth-Token': localStorage.getItem('token')
+            }
+            })
+            .then((response) => {
+                window.location.reload();
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error);
+                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.loading = false;
+            })
 
+        },
         getSubscriptions(){
             this.loading = true;
             let api = "http://79.127.54.112:5000/Subscription/" + this.$route.query.id
@@ -645,12 +773,11 @@ export default {
                         text: response.data.message[i].period
                     })
                 }
-                console.log(response);
                 this.getUsers()
-
             })
             .catch((e) => {
                 console.log(e);
+                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
         },
@@ -673,6 +800,7 @@ export default {
             })
             .catch((error) => {
                 console.log(error);
+                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
         },
@@ -698,6 +826,7 @@ export default {
                 window.location.reload()
             })
             .catch((error) => {
+                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 console.log(error);
                 this.loading = false;
             })
@@ -720,6 +849,7 @@ export default {
                 window.location.reload()
             })
             .catch((error) => {
+                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 console.log(error);
                 this.loading = false;
             })
@@ -743,6 +873,7 @@ export default {
                 window.location.reload()
             })
             .catch((error) => {
+                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 console.log(error);
                 this.loading = false;
             })
@@ -763,6 +894,7 @@ export default {
                 window.location.reload()
             })
             .catch((error) => {
+                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 console.log(error);
                 this.loading = false;
             })
@@ -782,6 +914,7 @@ export default {
                 this.loading = false;
             })
             .catch((error) => {
+                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 console.log(error);
                 this.loading = false;
             })
@@ -804,6 +937,7 @@ export default {
             this.loading = false;
         })
         .catch((error) => {
+            this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
             console.log(error);
             this.loading = false;
         })
