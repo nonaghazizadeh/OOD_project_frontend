@@ -80,8 +80,6 @@ library.add(faTimeline);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
-
-
 new Vue({
   router,
   store,
