@@ -466,8 +466,6 @@ export default {
                     this.isAdmin = true
                     this.getSubscriptions()
                 }
-                console.log(this.isUser)
-
             })
         },
         editSubscription(){
@@ -488,6 +486,7 @@ export default {
             })
             .catch((error) => {
                 console.log(error);
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
 
@@ -553,12 +552,11 @@ export default {
                         text: response.data.message[i].name
                     })
                     }
-
                 }
                 this.getCategory();
             })
             .catch((e) => {
-                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 console.log(e);
                 this.loading = false;
             })
@@ -577,10 +575,9 @@ export default {
             })
             .catch((e) => {
                 console.log(e);
-                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
-
         },
         getCategory(){
             let api = "http://79.127.54.112:5000/Category/GetAll/" + this.channelId ;
@@ -602,7 +599,7 @@ export default {
             })
             .catch((e) => {
                 console.log(e);
-                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
         },
@@ -631,7 +628,7 @@ export default {
             })
             .catch((e) => {
                 console.log(e);
-                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
         
@@ -654,10 +651,9 @@ export default {
             })
             .catch((e) => {
                 console.log(e)
-                this.$bvToast.toast(e, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
-
         },
         getUserCategory(){
             let api = "http://79.127.54.112:5000/Category/GetAll/" + this.channelId ;
@@ -679,7 +675,7 @@ export default {
             })
             .catch((e) => {
                 console.log(e);
-                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
         },
@@ -715,7 +711,7 @@ export default {
             })
             .catch((e) => {
                 console.log(e);
-                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
         },
@@ -737,7 +733,7 @@ export default {
             })
             .catch((error) => {
                 console.log(error);
-                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
 
@@ -777,7 +773,7 @@ export default {
             })
             .catch((e) => {
                 console.log(e);
-                this.$bvToast.toast(e.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
         },
@@ -800,7 +796,7 @@ export default {
             })
             .catch((error) => {
                 console.log(error);
-                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 this.loading = false;
             })
         },
@@ -826,7 +822,7 @@ export default {
                 window.location.reload()
             })
             .catch((error) => {
-                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 console.log(error);
                 this.loading = false;
             })
@@ -849,7 +845,7 @@ export default {
                 window.location.reload()
             })
             .catch((error) => {
-                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 console.log(error);
                 this.loading = false;
             })
@@ -873,7 +869,7 @@ export default {
                 window.location.reload()
             })
             .catch((error) => {
-                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 console.log(error);
                 this.loading = false;
             })
@@ -894,7 +890,7 @@ export default {
                 window.location.reload()
             })
             .catch((error) => {
-                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 console.log(error);
                 this.loading = false;
             })
@@ -914,7 +910,7 @@ export default {
                 this.loading = false;
             })
             .catch((error) => {
-                this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+                this.$bvToast.toast(error.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
                 console.log(error);
                 this.loading = false;
             })
@@ -937,7 +933,7 @@ export default {
             this.loading = false;
         })
         .catch((error) => {
-            this.$bvToast.toast(error.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
+            this.$bvToast.toast(error.response.data.message, {title: 'پیام',autoHideDelay: 5000, appendToast: true})
             console.log(error);
             this.loading = false;
         })

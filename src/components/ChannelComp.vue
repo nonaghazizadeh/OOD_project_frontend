@@ -414,6 +414,12 @@ export default {
                 this.contentLoading= false;
                 this.searchModalShow = false;
             })
+            .catch((e) => {
+                this.channelLoading = false
+                this.contentLoading = false
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+
+            })
         },
         ok(){
             let api = "http://79.127.54.112:5000/Subscription/BuyContent/" + this.contentId
@@ -488,6 +494,11 @@ export default {
                 console.log(response)
                 this.timeLineContents = response.data.message
                 this.loadingTimeline = true;
+                this.channelLoading = false
+                this.contentLoading = false
+            })
+            .catch((e) =>{
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 this.channelLoading = false
                 this.contentLoading = false
             })
@@ -608,6 +619,7 @@ export default {
             .catch(error => {
                 this.$bvToast.toast(error.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
                 console.log(error)
+                this.contentLoading = true
             })
         },
         goProfile(){
@@ -635,6 +647,11 @@ export default {
                 this.channelLoading = false;
                 this.contentLoading= false;
             })
+            .catch((e) =>{
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                this.channelLoading = false;
+                this.contentLoading= false;
+            })
         },
         searchInContents(id){
             this.contentLoading = true
@@ -648,6 +665,11 @@ export default {
                 console.log(response)
                 this.searchedContentList = response.data.message;
                 this.contentSearchMode = true;
+                this.contentLoading = false;
+            })
+            .catch((e) =>{
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
+                this.contentSearchMode = false;
                 this.contentLoading = false;
             })
         },
@@ -712,6 +734,7 @@ export default {
             .catch((e) => {
                 console.log(e)
                 this.channelLoading = false
+                this.$bvToast.toast(e.response.data.message, {title: 'پیام خطا',autoHideDelay: 5000, appendToast: true})
             })
 
         }
